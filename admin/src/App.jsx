@@ -9,8 +9,6 @@ import Notifications from './pages/Notifications'
 
 
 function App() {
-  
-
   return (
     <Routes>
       <Route path='/' element={<Login/>}/>
