@@ -1,30 +1,42 @@
 import React, { useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
+import { serverUrl } from "../App";
+import axios from "axios";
+import { useAuth } from "../context/AuthContext";
+
+
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [redirect, setRedirect] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
+  //const [errorMsg, setErrorMsg] = useState("");
+  const navigate = useNavigate()
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const { isAuthenticated, setIsAuthenticated } = useAuth();
 
-    const admin_email = import.meta.env.VITE_ADMIN_EMAIL;
-    const admin_password = import.meta.env.VITE_ADMIN_PASSWORD;
-
-    if (email !== admin_email || password !== admin_password) {
-      setErrorMsg("Invalid credentials");
-      return;
+  const handleLogin = async (e) => {
+    try {
+        e.preventDefault()
+        const res = await axios.post(
+            `${serverUrl}/api/auth/admin-login`,
+            {
+                email,
+                password
+            },
+            {
+                withCredentials: true
+            }
+        )
+        console.log(res.data)
+        setIsAuthenticated(true);
+        navigate("/")
+        
+    } catch (error) {
+        console.log(error)        
     }
-
-    // If credentials are correct
-    setRedirect(true);
-  };
-
-  if (redirect) {
-    return <Navigate to="/dashboard" replace />;
   }
+
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-white to-purple-100 p-4">
@@ -32,7 +44,7 @@ function Login() {
 
         {/* Logo + Heading */}
         <div className="flex flex-col items-center mb-6">
-          <img src="public/logo.jpg" alt="" height={100} width={100} />
+          <img src="logo.jpg" alt="" height={100} width={100} />
 
           <h1 className="mt-4 text-2xl font-semibold text-purple-700">
             Welcome Back
@@ -44,12 +56,12 @@ function Login() {
         </div>
 
         {/* Error Message */}
-        {errorMsg && (
+        {/* {errorMsg && (
           <p className="text-red-600 text-center mb-3 text-sm">{errorMsg}</p>
-        )}
+        )} */}
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleLogin} className="space-y-4">
           <input
             type="email"
             placeholder="Email address"
