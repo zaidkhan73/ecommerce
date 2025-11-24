@@ -44,7 +44,7 @@ function App() {
         />
 
         <Route
-          path="/categories/edit"
+          path="/categories/edit/:id"
           element={
             <ProtectedRoute>
               <EditCategory />

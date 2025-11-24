@@ -1,9 +1,11 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import { Menu, ArrowLeft, Trash2} from "lucide-react";
 import DeleteWarningDialog from "../components/DeleteWarningDialog";
 import DeleteConfirmDialog from "../components/DeleteConfirmDialog";
+import axios from "axios";
+import { serverUrl } from "../App";
 
 export default function EditCategory() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -12,56 +14,22 @@ export default function EditCategory() {
   const [showProductDeleteConfirm, setShowProductDeleteConfirm] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
   const navigate = useNavigate()
+  const {id} = useParams()
 
   // Mock data - In real app, this would come from props/route params/API
-  const [category, setCategory] = useState({
-    id: 'cat1',
-    name: 'Electronics',
-    description: 'Electronic devices and components',
-    status: 'Active'
-  });
+  const [category, setCategory] = useState();
 
-  const [products, setProducts] = useState([
-    { id: 'p1', name: 'Wireless Mouse', categoryId: 'cat1', price: 29.99, stock: 50 },
-    { id: 'p2', name: 'Keyboard', categoryId: 'cat1', price: 79.99, stock: 30 },
-    { id: 'p3', name: 'Monitor', categoryId: 'cat1', price: 299.99, stock: 15 },
-  ]);
+  const [products, setProducts] = useState([]);
 
-  const [description, setDescription] = useState(category.description);
-  const [isActive, setIsActive] = useState(category.status === 'Active');
+  const [description, setDescription] = useState(category?.category_description);
+  const [isActive, setIsActive] = useState(category?.isActive);
 
-  const categoryProducts = products.filter(p => p.categoryId === category.id);
+  const categoryProducts = products
 
   const handleBack = () => {
-    // In real app: navigate back to categories list
-    console.log('Navigate back to categories');
     navigate('/categories');
   };
-
-  const handleSave = () => {
-    // In real app: save to API/database
-    console.log('Saving category:', {
-      ...category,
-      description,
-      status: isActive ? 'Active' : 'Inactive'
-    });
-    alert('Category saved successfully!');
-    navigate('/categories');
-  };
-
-  const handleDeleteClick = () => {
-    if (categoryProducts.length > 0) {
-      setShowDeleteWarning(true);
-    } else {
-      setShowDeleteConfirm(true);
-    }
-  };
-
-  const handleConfirmDelete = () => {
-    // In real app: delete from API/database and navigate back
-    console.log('Deleting category:', category.id);
-    setShowDeleteConfirm(false);
-  };
+  
 
   const handleDeleteProductClick = (product) => {
     setProductToDelete(product);
@@ -76,6 +44,58 @@ export default function EditCategory() {
       setShowProductDeleteConfirm(false);
     }
   };
+
+  const handleDeleteClick = () => {
+    if (categoryProducts.length > 0) {
+      setShowDeleteWarning(true);
+    } else {
+      setShowDeleteConfirm(true);
+    }
+  };
+
+  const handleConfirmDelete = async() => {
+    try {
+        const res = await axios.delete(`${serverUrl}/api/category/delete-category/${id}`, {withCredentials: true})
+    console.log(res.data)
+    navigate('/categories')
+    } catch (error) {
+        console.log(error)
+    }
+    
+  }
+
+  const updateCategory = async () => {
+    try {
+       const res = await axios.put(`${serverUrl}/api/category/update-category/${id}`,{
+        category_description: description,
+        isActive: isActive
+       }, {withCredentials: true} ) 
+       console.log(res.data)
+       navigate('/categories')
+    } catch (error) {
+        console.log(error)
+    }
+  }
+
+  useEffect(() => {
+  const fetchCategory = async () => {
+    try {
+      const res = await axios.get(`${serverUrl}/api/category/get-category/${id}`);
+
+      setCategory(res.data.data.category);
+      setProducts(res.data.data.products);
+
+      setDescription(res.data.data.category.category_description);
+      setIsActive(res.data.data.category.isActive);
+
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  fetchCategory();
+}, [id]);
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -120,7 +140,7 @@ export default function EditCategory() {
                 Category Name
               </label>
               <div className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-600 font-medium">
-                {category.name}
+                {category?.name}
               </div>
               <p className="text-xs text-gray-500 mt-1">Category name cannot be changed</p>
             </div>
@@ -222,8 +242,8 @@ export default function EditCategory() {
             </button>
             <button
               type="button"
-              onClick={handleSave}
               className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:shadow-lg font-medium transition-all duration-200 transform hover:scale-105"
+              onClick={updateCategory}
             >
               Save Changes
             </button>

@@ -1,5 +1,6 @@
 import express from "express";
 import { Category } from "../models/category.model.js";
+import { Product } from "../models/product.model.js";
 
 const createCategory = async (req, res, next) => {
   try {
@@ -24,6 +25,7 @@ const createCategory = async (req, res, next) => {
     const newCategory = await Category.create({
       name,
       category_description,
+      isActive
     });
 
     return res.status(201).json({
@@ -40,13 +42,49 @@ const createCategory = async (req, res, next) => {
   }
 };
 
+const getCategoryById = async (req, res) => {
+  try {
+    const categoryId = req.params.id;
+
+    // 1️⃣ Find Category
+    const category = await Category.findById(categoryId);
+
+    if (!category) {
+      return res.status(404).json({
+        success: false,
+        message: "Category not found",
+      });
+    }
+
+    // 2️⃣ Fetch Products of this category
+    const products = await Product.find({ product_category: categoryId })
+      .select("_id name product_price inventory_quantity");
+
+    return res.status(200).json({
+      success: true,
+      message: "Category fetched successfully",
+      data: {
+        category,
+        products,
+        productCount: products.length,  
+      },
+    });
+
+  } catch (error) {
+    console.log("Get Category Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
 const updateCategory = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { name, category_description, isActive } = req.body;
+    const { category_description, isActive } = req.body;
 
     const updateCategory = await Category.findByIdAndUpdate(id, {
-      name,
       category_description,
       isActive,
     });
@@ -98,9 +136,30 @@ const deleteCategory = async (req, res, next) => {
   }
 };
 
-const getAllCategories = async (req, res, next) => {
+
+const getAllCategories = async (req, res) => {
   try {
-    const categories = await Category.find().sort({ createdAt: -1 });
+    const categories = await Category.aggregate([
+      {
+        $lookup: {
+          from: "products", // Product model ka collection name (MongoDB me lowercase + plural)
+          localField: "_id",
+          foreignField: "product_category",
+          as: "products",
+        },
+      },
+      {
+        $addFields: {
+          productCount: { $size: "$products" }, // add product count
+        },
+      },
+      {
+        $project: {
+          products: 0, // optional: agar sirf count chahiye aur product details nahi
+        },
+      },
+      { $sort: { createdAt: -1 } },
+    ]);
 
     return res.status(200).json({
       success: true,
@@ -116,4 +175,5 @@ const getAllCategories = async (req, res, next) => {
   }
 };
 
-export { createCategory, updateCategory, deleteCategory , getAllCategories};
+
+export { createCategory, updateCategory, deleteCategory , getAllCategories, getCategoryById};

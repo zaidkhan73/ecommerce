@@ -1,51 +1,52 @@
-import React, { useState } from 'react';
-import { X, Plus } from 'lucide-react';
+import React, { useState } from "react";
+import { X, Plus } from "lucide-react";
+import axios from "axios";
+import { serverUrl } from "../App";
 
 // Add Category Dialog Component
-export const AddCategoryDialog = ({ isOpen, onClose, existingCategories, onAddCategory }) => {
-  const [categoryName, setCategoryName] = useState('');
-  const [description, setDescription] = useState('');
+export const AddCategoryDialog = ({ isOpen, onClose }) => {
+  const [categoryName, setCategoryName] = useState("");
+  const [description, setDescription] = useState("");
   const [isActive, setIsActive] = useState(true);
   const [showError, setShowError] = useState(false);
 
-  const handleSubmit = () => {
-    // Check if fields are empty
-    if (!categoryName.trim() || !description.trim()) {
-      return;
-    }
-    
-    // Check if category already exists
-    const categoryExists = existingCategories.some(
-      cat => cat.name.toLowerCase() === categoryName.toLowerCase()
-    );
+  const handleSubmit = async () => {
+    try {
+      if (!categoryName.trim() || !description.trim()) {
+        return;
+      }
 
-    if (categoryExists) {
+      const res = await axios.post(
+        `${serverUrl}/api/category/create-category`,
+        {
+          name: categoryName,
+          category_description: description,
+          isActive: isActive,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      console.log(res.data);
+
+      if (res.data.success) {
+        // success -> reset & close
+        setCategoryName("");
+        setDescription("");
+        setShowError(false);
+        onClose();
+      } else {
+        setShowError(true); // show error message if backend returns failure
+      }
+    } catch (error) {
+      console.log(error);
       setShowError(true);
-      return;
     }
-    
-
-    // Add the category
-    onAddCategory({
-      id: `cat${Date.now()}`,
-      name: categoryName,
-      description: description,
-      productCount: 0,
-      imageUrl: null,
-      status: isActive ? 'Active' : 'Inactive',
-    });
-
-    // Reset form and close
-    setCategoryName('');
-    setDescription('');
-    setIsActive(true);
-    setShowError(false);
-    onClose();
   };
 
   const handleClose = () => {
-    setCategoryName('');
-    setDescription('');
+    setCategoryName("");
+    setDescription("");
     setIsActive(true);
     setShowError(false);
     onClose();
@@ -61,7 +62,7 @@ export const AddCategoryDialog = ({ isOpen, onClose, existingCategories, onAddCa
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop with blur */}
-      <div 
+      <div
         className="absolute inset-0 bg-black/30 bg-opacity-50 backdrop-blur-sm"
         onClick={handleClose}
       />
@@ -85,7 +86,10 @@ export const AddCategoryDialog = ({ isOpen, onClose, existingCategories, onAddCa
         <div className="p-6 space-y-5">
           {/* Category Name Input */}
           <div>
-            <label htmlFor="categoryName" className="block text-sm font-semibold text-gray-700 mb-2">
+            <label
+              htmlFor="categoryName"
+              className="block text-sm font-semibold text-gray-700 mb-2"
+            >
               Category Name
             </label>
             <input
@@ -100,7 +104,10 @@ export const AddCategoryDialog = ({ isOpen, onClose, existingCategories, onAddCa
 
           {/* Description Input */}
           <div>
-            <label htmlFor="description" className="block text-sm font-semibold text-gray-700 mb-2">
+            <label
+              htmlFor="description"
+              className="block text-sm font-semibold text-gray-700 mb-2"
+            >
               Description
             </label>
             <textarea
@@ -116,11 +123,14 @@ export const AddCategoryDialog = ({ isOpen, onClose, existingCategories, onAddCa
           {/* Active Status Switch */}
           <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
             <div>
-              <label htmlFor="activeSwitch" className="block text-sm font-semibold text-gray-700">
+              <label
+                htmlFor="activeSwitch"
+                className="block text-sm font-semibold text-gray-700"
+              >
                 Category Status
               </label>
               <p className="text-xs text-gray-500 mt-1">
-                {isActive ? 'Currently Active' : 'Currently Inactive'}
+                {isActive ? "Currently Active" : "Currently Inactive"}
               </p>
             </div>
             <button
@@ -128,12 +138,14 @@ export const AddCategoryDialog = ({ isOpen, onClose, existingCategories, onAddCa
               id="activeSwitch"
               onClick={() => setIsActive(!isActive)}
               className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
-                isActive ? 'bg-gradient-to-r from-purple-600 to-blue-600' : 'bg-gray-300'
+                isActive
+                  ? "bg-gradient-to-r from-purple-600 to-blue-600"
+                  : "bg-gray-300"
               }`}
             >
               <span
                 className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform duration-200 ${
-                  isActive ? 'translate-x-6' : 'translate-x-1'
+                  isActive ? "translate-x-6" : "translate-x-1"
                 }`}
               />
             </button>
@@ -160,6 +172,7 @@ export const AddCategoryDialog = ({ isOpen, onClose, existingCategories, onAddCa
             <button
               type="button"
               onClick={handleSubmit}
+              disabled={!categoryName.trim() || !description.trim()}
               className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:shadow-lg font-medium transition-all duration-200 transform hover:scale-105"
             >
               Add Category

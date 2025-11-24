@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Search,
   PlusCircle,
@@ -14,6 +14,8 @@ import {
 import Sidebar from "../components/Sidebar";
 import { AddCategoryDialog } from "../components/AddCategory";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { serverUrl } from "../App";
 
 // Main Categories Component
 export default function Categories() {
@@ -22,67 +24,31 @@ export default function Categories() {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate()
 
-  const [categories] = useState([
-    {
-      id: "cat1",
-      name: "Machinery Parts",
-      description:
-        "Components and spare parts for various industrial machinery.",
-      productCount: 150,
-      imageUrl: null,
-      status: "Active",
-    },
-    {
-      id: "cat2",
-      name: "Mechanical Components",
-      description:
-        "Precision mechanical elements like gears, bearings, and shafts.",
-      productCount: 230,
-      imageUrl: null,
-      status: "Active",
-    },
-    {
-      id: "cat3",
-      name: "Robotics",
-      description: "Industrial robots, robotic arms, and automation solutions.",
-      productCount: 45,
-      imageUrl: null,
-      status: "Inactive",
-    },
-    {
-      id: "cat4",
-      name: "Sensors",
-      description:
-        "Various types of sensors for monitoring and control systems.",
-      productCount: 180,
-      imageUrl: null,
-      status: "Active",
-    },
-    {
-      id: "cat5",
-      name: "Logistics Equipment",
-      description:
-        "Conveyor systems, forklifts, and other warehouse logistics tools.",
-      productCount: 70,
-      imageUrl: null,
-      status: "Active",
-    },
-    {
-      id: "cat6",
-      name: "Power Tools",
-      description: "Electric and pneumatic tools for industrial applications.",
-      productCount: 95,
-      imageUrl: null,
-      status: "Active",
-    },
-  ]);
+  const [categories, setCategories] = useState([]);
+
+  useEffect(()=>{
+    const fetchCategories = async () => {
+      try {
+        const res = await axios.get(`${serverUrl}/api/category/getAll-categories`)
+    console.log(res.data.data)
+    setCategories(res.data.data)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    fetchCategories();
+    
+  },[])
 
 
-  const filteredCategories = categories.filter(
-    (category) =>
-      category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      category.description.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredCategories = categories.filter((category) => {
+  const name = category.name || "";
+
+  return (
+    name.toLowerCase().includes(searchTerm.toLowerCase()) 
   );
+});
+
 
   const getStatusStyle = (status) => {
     return status === "Active"
@@ -163,9 +129,6 @@ export default function Categories() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-gray-200">
-                      <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm w-20">
-                        Image
-                      </th>
                       <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm">
                         Name
                       </th>
@@ -200,25 +163,12 @@ export default function Categories() {
                           className="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-150"
                         >
                           <td className="py-4 px-4">
-                            <div className="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
-                              {category.imageUrl ? (
-                                <img
-                                  src={category.imageUrl}
-                                  alt={category.name}
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <Image className="w-5 h-5 text-gray-400" />
-                              )}
-                            </div>
-                          </td>
-                          <td className="py-4 px-4">
                             <button className="font-medium text-gray-900 hover:text-purple-600 transition-colors duration-200 text-left max-w-[180px] truncate block">
                               {category.name}
                             </button>
                           </td>
                           <td className="py-4 px-4 text-gray-700 max-w-[250px] truncate">
-                            {category.description}
+                            {category.category_description}
                           </td>
                           <td className="py-4 px-4 text-gray-900 font-semibold">
                             {category.productCount}
@@ -226,15 +176,15 @@ export default function Categories() {
                           <td className="py-4 px-4">
                             <span
                               className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusStyle(
-                                category.status
+                                category.isActive ? "Active" : "Inactive"
                               )}`}
                             >
-                              {category.status}
+                              {category.isActive ? "Active" : "Inactive"}
                             </span>
                           </td>
                           <td className="py-4 px-4 text-right">
                             <button className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-purple-500 hover:text-purple-600 transition-all duration-200"
-                            onClick={() => navigate('/categories/edit')}>
+                            onClick={() => navigate(`/categories/edit/${category._id}`)}>
                               <Edit2 className="w-4 h-4" />
                               Edit
                             </button>
