@@ -5,7 +5,8 @@ import Products from './pages/Products'
 import Categories from './pages/Categories'
 import Notifications from './pages/Notifications'
 import ProtectedRoute from './components/ProtectedRoute'
-import { AuthProvider } from './context/AuthContext'
+import { AuthProvider } from './context/AuthProvider'
+import EditCategory from './pages/EditCategory'
 
 export const serverUrl = 'http://localhost:8000'
 
@@ -42,6 +43,14 @@ function App() {
           }
         />
 
+        <Route
+          path="/categories/edit"
+          element={
+            <ProtectedRoute>
+              <EditCategory />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/notifications"
           element={

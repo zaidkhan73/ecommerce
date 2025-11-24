@@ -18,26 +18,31 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { serverUrl } from "../App";
+import { useAuth } from "../hooks/useAuth";
 
-const handleLogout = async() => {
-  try {
-    const res = await axios.get(`${serverUrl}/api/auth/admin-logout`)
-    console.log(res.data)
-  } catch (error) {
-    console.log(error)
-  }
-}
+
 
 function Sidebar({ isOpen, onClose }) {
   const navigate = useNavigate();
   const location = useLocation(); // 👉 current URL path
+  const { logout } = useAuth();
 
   const menuItems = [
-    { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
+    { icon: LayoutDashboard, label: "Dashboard", path: "/" },
     { icon: Package, label: "Products", path: "/products" },
     { icon: Layers, label: "Categories", path: "/categories" },
     { icon: Bell, label: "Notifications", path: "/notifications" },
   ];
+
+  const handleLogout = async() => {
+  try {
+    const res = await axios.get(`${serverUrl}/api/auth/admin-logout`)
+    console.log(res.data)
+    logout()
+  } catch (error) {
+    console.log(error)
+  }
+}
 
   return (
     <>

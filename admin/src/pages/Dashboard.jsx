@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Package,
   Grid,
@@ -8,19 +8,19 @@ import {
   Settings,
   MoreVertical,
   Menu,
-  X,
-  LayoutDashboard,
-  Box,
-  Layers,
-  Bell,
+  Edit2,
+  Trash2,
 } from "lucide-react";
 import Sidebar from "../components/Sidebar";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { AddCategoryDialog } from "../components/AddCategory";
 
 function Dashboard() {
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(null);
+  const dropdownRef = useRef(null);
 
   const [products] = useState([
     { id: 1, name: "Wireless Headphones", price: "$89.99", status: "Active" },
@@ -61,6 +61,36 @@ function Dashboard() {
       color: "from-green-500 to-green-600",
     },
   ];
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpenDropdown(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const toggleDropdown = (productId) => {
+    setOpenDropdown(openDropdown === productId ? null : productId);
+  };
+
+  const handleEdit = (product) => {
+    console.log("Edit product:", product);
+    // Navigate to edit page or open edit modal
+    // navigate(`/products/edit/${product.id}`);
+    setOpenDropdown(null);
+  };
+
+  const handleDelete = (product) => {
+    console.log("Delete product:", product);
+    // Show delete confirmation dialog
+    // Or directly delete the product
+    setOpenDropdown(null);
+  };
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -139,7 +169,10 @@ function Dashboard() {
                 <Plus className="w-5 h-5" />
                 Add Product
               </button>
-              <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105 font-medium">
+              <button
+                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105 font-medium"
+                onClick={() => setIsDialogOpen(true)}
+              >
                 <Grid className="w-5 h-5" />
                 Add Category
               </button>
@@ -161,7 +194,12 @@ function Dashboard() {
               <h2 className="text-xl font-bold text-gray-800">
                 Recent Products
               </h2>
-              <button className="px-4 py-2 text-purple-600 hover:bg-purple-50 rounded-lg font-medium transition-colors duration-200">
+              <button
+                className="px-4 py-2 text-purple-600 hover:bg-purple-50 rounded-lg font-medium transition-colors duration-200"
+                onClick={() => {
+                  navigate("/products");
+                }}
+              >
                 View All
               </button>
             </div>
@@ -197,9 +235,35 @@ function Dashboard() {
                       {product.status}
                     </span>
 
-                    <button className="p-2 hover:bg-gray-200 rounded-lg transition-colors duration-200">
-                      <MoreVertical className="w-5 h-5 text-gray-600" />
-                    </button>
+                    {/* Dropdown Menu */}
+                    <div className="relative" ref={dropdownRef}>
+                      <button
+                        onClick={() => toggleDropdown(product.id)}
+                        className="p-2 hover:bg-gray-200 rounded-lg transition-colors duration-200"
+                      >
+                        <MoreVertical className="w-5 h-5 text-gray-600" />
+                      </button>
+
+                      {/* Dropdown Content */}
+                      {openDropdown === product.id && (
+                        <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
+                          <button
+                            onClick={() => handleEdit(product)}
+                            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors duration-200"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(product)}
+                            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                            Delete
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -207,6 +271,13 @@ function Dashboard() {
           </div>
         </div>
       </div>
+      <AddCategoryDialog
+        className="transition-all duration-300"
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        // existingCategories={categories}
+        // onAddCategory={handleAddCategory}
+      />
     </div>
   );
 }

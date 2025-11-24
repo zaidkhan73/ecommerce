@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { serverUrl } from "../App";
 import axios from "axios";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 
 
 
@@ -12,7 +12,7 @@ function Login() {
   //const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate()
 
-  const { isAuthenticated, setIsAuthenticated } = useAuth();
+  const { login } = useAuth();
 
   const handleLogin = async (e) => {
     try {
@@ -28,7 +28,7 @@ function Login() {
             }
         )
         console.log(res.data)
-        setIsAuthenticated(true);
+        login()
         navigate("/")
         
     } catch (error) {

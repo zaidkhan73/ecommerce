@@ -1,62 +1,82 @@
-import React, { useState } from 'react';
-import { Search, PlusCircle, Edit2, Image, Menu, X, LayoutDashboard, Box, Layers, Bell } from 'lucide-react';
-import Sidebar from '../components/Sidebar';
+import React, { useState } from "react";
+import {
+  Search,
+  PlusCircle,
+  Edit2,
+  Image,
+  Menu,
+  X,
+  LayoutDashboard,
+  Box,
+  Layers,
+  Bell,
+} from "lucide-react";
+import Sidebar from "../components/Sidebar";
+import { AddCategoryDialog } from "../components/AddCategory";
+import { useNavigate } from "react-router-dom";
 
 // Main Categories Component
 export default function Categories() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate()
 
   const [categories] = useState([
     {
-      id: 'cat1',
-      name: 'Machinery Parts',
-      description: 'Components and spare parts for various industrial machinery.',
+      id: "cat1",
+      name: "Machinery Parts",
+      description:
+        "Components and spare parts for various industrial machinery.",
       productCount: 150,
       imageUrl: null,
-      status: 'Active',
+      status: "Active",
     },
     {
-      id: 'cat2',
-      name: 'Mechanical Components',
-      description: 'Precision mechanical elements like gears, bearings, and shafts.',
+      id: "cat2",
+      name: "Mechanical Components",
+      description:
+        "Precision mechanical elements like gears, bearings, and shafts.",
       productCount: 230,
       imageUrl: null,
-      status: 'Active',
+      status: "Active",
     },
     {
-      id: 'cat3',
-      name: 'Robotics',
-      description: 'Industrial robots, robotic arms, and automation solutions.',
+      id: "cat3",
+      name: "Robotics",
+      description: "Industrial robots, robotic arms, and automation solutions.",
       productCount: 45,
       imageUrl: null,
-      status: 'Inactive',
+      status: "Inactive",
     },
     {
-      id: 'cat4',
-      name: 'Sensors',
-      description: 'Various types of sensors for monitoring and control systems.',
+      id: "cat4",
+      name: "Sensors",
+      description:
+        "Various types of sensors for monitoring and control systems.",
       productCount: 180,
       imageUrl: null,
-      status: 'Active',
+      status: "Active",
     },
     {
-      id: 'cat5',
-      name: 'Logistics Equipment',
-      description: 'Conveyor systems, forklifts, and other warehouse logistics tools.',
+      id: "cat5",
+      name: "Logistics Equipment",
+      description:
+        "Conveyor systems, forklifts, and other warehouse logistics tools.",
       productCount: 70,
       imageUrl: null,
-      status: 'Active',
+      status: "Active",
     },
     {
-      id: 'cat6',
-      name: 'Power Tools',
-      description: 'Electric and pneumatic tools for industrial applications.',
+      id: "cat6",
+      name: "Power Tools",
+      description: "Electric and pneumatic tools for industrial applications.",
       productCount: 95,
       imageUrl: null,
-      status: 'Active',
+      status: "Active",
     },
   ]);
+
 
   const filteredCategories = categories.filter(
     (category) =>
@@ -65,9 +85,9 @@ export default function Categories() {
   );
 
   const getStatusStyle = (status) => {
-    return status === 'Active'
-      ? 'bg-green-100 text-green-700'
-      : 'bg-gray-100 text-gray-700';
+    return status === "Active"
+      ? "bg-green-100 text-green-700"
+      : "bg-gray-100 text-gray-700";
   };
 
   return (
@@ -98,7 +118,7 @@ export default function Categories() {
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold text-gray-900">Categories</h2>
             <button
-  className="
+              className="
     flex items-center gap-2 
     px-4 py-2 md:px-6 md:py-3 
     bg-gradient-to-r from-purple-600 to-blue-600 
@@ -108,20 +128,23 @@ export default function Categories() {
     font-medium
     text-sm md:text-base
   "
->
-  <PlusCircle className="w-4 h-4 md:w-5 md:h-5" />
+  onClick={() => setIsDialogOpen(true)}
+            >
+              <PlusCircle className="w-4 h-4 md:w-5 md:h-5" />
 
-  {/* Mobile: "New", Desktop: "Add New Category" */}
-  <span className="md:hidden">New</span>
-  <span className="hidden md:inline">Add New Category</span>
-</button>
+              {/* Mobile: "New", Desktop: "Add New Category" */}
+              <span className="md:hidden">New</span>
+              <span className="hidden md:inline">Add New Category</span>
+            </button>
           </div>
 
           {/* Card */}
           <div className="bg-white rounded-xl shadow-md border border-gray-100">
             {/* Card Header */}
             <div className="p-6 border-b border-gray-200">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Category List</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">
+                Category List
+              </h3>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <input
@@ -140,24 +163,42 @@ export default function Categories() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-gray-200">
-                      <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm w-20">Image</th>
-                      <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm">Name</th>
-                      <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm">Description</th>
-                      <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm">Products</th>
-                      <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm">Status</th>
-                      <th className="text-right py-3 px-4 font-semibold text-gray-700 text-sm">Actions</th>
+                      <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm w-20">
+                        Image
+                      </th>
+                      <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm">
+                        Name
+                      </th>
+                      <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm">
+                        Description
+                      </th>
+                      <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm">
+                        Products
+                      </th>
+                      <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm">
+                        Status
+                      </th>
+                      <th className="text-right py-3 px-4 font-semibold text-gray-700 text-sm">
+                        Actions
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredCategories.length === 0 ? (
                       <tr>
-                        <td colSpan="6" className="text-center py-8 text-gray-500">
+                        <td
+                          colSpan="6"
+                          className="text-center py-8 text-gray-500"
+                        >
                           No categories found matching your search.
                         </td>
                       </tr>
                     ) : (
                       filteredCategories.map((category) => (
-                        <tr key={category.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-150">
+                        <tr
+                          key={category.id}
+                          className="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-150"
+                        >
                           <td className="py-4 px-4">
                             <div className="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
                               {category.imageUrl ? (
@@ -183,12 +224,17 @@ export default function Categories() {
                             {category.productCount}
                           </td>
                           <td className="py-4 px-4">
-                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusStyle(category.status)}`}>
+                            <span
+                              className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusStyle(
+                                category.status
+                              )}`}
+                            >
                               {category.status}
                             </span>
                           </td>
                           <td className="py-4 px-4 text-right">
-                            <button className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-purple-500 hover:text-purple-600 transition-all duration-200">
+                            <button className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-purple-500 hover:text-purple-600 transition-all duration-200"
+                            onClick={() => navigate('/categories/edit')}>
                               <Edit2 className="w-4 h-4" />
                               Edit
                             </button>
@@ -203,6 +249,13 @@ export default function Categories() {
           </div>
         </div>
       </div>
+      <AddCategoryDialog
+        className="transition-all duration-300"
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        // existingCategories={categories}
+        // onAddCategory={handleAddCategory}
+      />
     </div>
   );
 }
