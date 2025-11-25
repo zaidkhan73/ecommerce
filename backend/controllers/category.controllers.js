@@ -46,7 +46,6 @@ const getCategoryById = async (req, res) => {
   try {
     const categoryId = req.params.id;
 
-    // 1️⃣ Find Category
     const category = await Category.findById(categoryId);
 
     if (!category) {
@@ -56,9 +55,8 @@ const getCategoryById = async (req, res) => {
       });
     }
 
-    // 2️⃣ Fetch Products of this category
     const products = await Product.find({ product_category: categoryId })
-      .select("_id name product_price inventory_quantity");
+      .select("_id name final_price inventory_quantity");
 
     return res.status(200).json({
       success: true,

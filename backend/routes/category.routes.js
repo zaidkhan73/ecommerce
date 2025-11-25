@@ -1,13 +1,14 @@
 import express from "express"
 import { createCategory, getAllCategories, updateCategory, deleteCategory , getCategoryById} from "../controllers/category.controllers.js"
+import isAuth from "../middlewares/isAuth.js"
 
 
 const categoryRouter = express.Router()
 
-categoryRouter.post("/create-category",createCategory)
-categoryRouter.get("/getAll-categories",getAllCategories)
-categoryRouter.get("/get-category/:id",getCategoryById)
-categoryRouter.put("/update-category/:id",updateCategory)
-categoryRouter.delete("/delete-category/:id",deleteCategory)
+categoryRouter.post("/create-category",isAuth,createCategory)
+categoryRouter.get("/getAll-categories",isAuth,getAllCategories)
+categoryRouter.get("/get-category/:id",isAuth,getCategoryById)
+categoryRouter.put("/update-category/:id",isAuth,updateCategory)
+categoryRouter.delete("/delete-category/:id",isAuth,deleteCategory)
 
 export default categoryRouter;

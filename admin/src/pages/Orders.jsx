@@ -3,7 +3,7 @@ import { BellRing, Menu, X, LayoutDashboard, Box, Layers, Bell } from 'lucide-re
 import Sidebar from '../components/Sidebar';
 
 // Main Notifications Component
-export default function Notifications() {
+export default function Orders() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const [orders] = useState([
@@ -90,7 +90,7 @@ export default function Notifications() {
               <Menu className="w-6 h-6 text-gray-700" />
             </button>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-              Notifications
+              Orders
             </h1>
           </div>
         </div>

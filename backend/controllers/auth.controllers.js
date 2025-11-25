@@ -22,6 +22,8 @@ const adminLogin = async (req, res) => {
 
         const token = generateToken(admin._id);
 
+        //console.log("token",token)
+
         res.cookie("token", token, {
             httpOnly: true,
             secure: false,  

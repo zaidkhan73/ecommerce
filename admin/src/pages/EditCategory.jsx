@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
-import { Menu, ArrowLeft, Trash2} from "lucide-react";
+import { Menu, ArrowLeft, Trash2 } from "lucide-react";
 import DeleteWarningDialog from "../components/DeleteWarningDialog";
 import DeleteConfirmDialog from "../components/DeleteConfirmDialog";
 import axios from "axios";
@@ -11,39 +11,52 @@ export default function EditCategory() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showDeleteWarning, setShowDeleteWarning] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showProductDeleteConfirm, setShowProductDeleteConfirm] = useState(false);
+  const [showProductDeleteConfirm, setShowProductDeleteConfirm] =
+    useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
-  const navigate = useNavigate()
-  const {id} = useParams()
+  const navigate = useNavigate();
+  const { id } = useParams();
 
   // Mock data - In real app, this would come from props/route params/API
   const [category, setCategory] = useState();
 
   const [products, setProducts] = useState([]);
 
-  const [description, setDescription] = useState(category?.category_description);
+  const [description, setDescription] = useState(
+    category?.category_description
+  );
   const [isActive, setIsActive] = useState(category?.isActive);
 
-  const categoryProducts = products
+  const categoryProducts = products;
 
   const handleBack = () => {
-    navigate('/categories');
+    navigate("/categories");
   };
-  
 
   const handleDeleteProductClick = (product) => {
     setProductToDelete(product);
     setShowProductDeleteConfirm(true);
   };
 
-  const handleConfirmProductDelete = () => {
-    // In real app: delete from API/database
-    if (productToDelete) {
-      setProducts(products.filter(p => p.id !== productToDelete.id));
+  const handleConfirmProductDelete = async (id) => {
+  try {
+    if (productToDelete?._id) {
+      const res = await axios.delete(
+        `${serverUrl}/api/product/delete-product/${productToDelete._id}`,
+        { withCredentials: true }
+      );
+      console.log(res.data);
+
+      // Remove deleted product from state
+      setProducts(products.filter(p => p._id !== productToDelete._id));
       setProductToDelete(null);
       setShowProductDeleteConfirm(false);
     }
-  };
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 
   const handleDeleteClick = () => {
     if (categoryProducts.length > 0) {
@@ -53,49 +66,57 @@ export default function EditCategory() {
     }
   };
 
-  const handleConfirmDelete = async() => {
+  const handleConfirmDelete = async () => {
     try {
-        const res = await axios.delete(`${serverUrl}/api/category/delete-category/${id}`, {withCredentials: true})
-    console.log(res.data)
-    navigate('/categories')
-    } catch (error) {
-        console.log(error)
-    }
-    
-  }
-
-  const updateCategory = async () => {
-    try {
-       const res = await axios.put(`${serverUrl}/api/category/update-category/${id}`,{
-        category_description: description,
-        isActive: isActive
-       }, {withCredentials: true} ) 
-       console.log(res.data)
-       navigate('/categories')
-    } catch (error) {
-        console.log(error)
-    }
-  }
-
-  useEffect(() => {
-  const fetchCategory = async () => {
-    try {
-      const res = await axios.get(`${serverUrl}/api/category/get-category/${id}`);
-
-      setCategory(res.data.data.category);
-      setProducts(res.data.data.products);
-
-      setDescription(res.data.data.category.category_description);
-      setIsActive(res.data.data.category.isActive);
-
+      const res = await axios.delete(
+        `${serverUrl}/api/category/delete-category/${id}`,
+        { withCredentials: true }
+      );
+      console.log(res.data);
+      navigate("/categories");
     } catch (error) {
       console.log(error);
     }
   };
 
-  fetchCategory();
-}, [id]);
+  const updateCategory = async () => {
+    try {
+      const res = await axios.put(
+        `${serverUrl}/api/category/update-category/${id}`,
+        {
+          category_description: description,
+          isActive: isActive,
+        },
+        { withCredentials: true }
+      );
+      console.log(res.data);
+      navigate("/categories");
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
+  useEffect(() => {
+    const fetchCategory = async () => {
+      try {
+        const res = await axios.get(
+          `${serverUrl}/api/category/get-category/${id}`,
+          { withCredentials: true }
+        );
+        console.log(res.data.data.products);
+        setCategory(res.data.data.category);
+        setProducts(res.data.data.products);
+        console.log(res.data.data.products._id);
+
+        setDescription(res.data.data.category.category_description);
+        setIsActive(res.data.data.category.isActive);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchCategory();
+  }, [id]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -132,7 +153,9 @@ export default function EditCategory() {
 
           {/* Category Details Card */}
           <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6 space-y-5">
-            <h2 className="text-xl font-bold text-gray-900">Category Details</h2>
+            <h2 className="text-xl font-bold text-gray-900">
+              Category Details
+            </h2>
 
             {/* Category Name (Read-only) */}
             <div>
@@ -142,12 +165,17 @@ export default function EditCategory() {
               <div className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-600 font-medium">
                 {category?.name}
               </div>
-              <p className="text-xs text-gray-500 mt-1">Category name cannot be changed</p>
+              <p className="text-xs text-gray-500 mt-1">
+                Category name cannot be changed
+              </p>
             </div>
 
             {/* Description Input */}
             <div>
-              <label htmlFor="description" className="block text-sm font-semibold text-gray-700 mb-2">
+              <label
+                htmlFor="description"
+                className="block text-sm font-semibold text-gray-700 mb-2"
+              >
                 Description
               </label>
               <textarea
@@ -163,11 +191,14 @@ export default function EditCategory() {
             {/* Active Status Switch */}
             <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
               <div>
-                <label htmlFor="activeSwitch" className="block text-sm font-semibold text-gray-700">
+                <label
+                  htmlFor="activeSwitch"
+                  className="block text-sm font-semibold text-gray-700"
+                >
                   Category Status
                 </label>
                 <p className="text-xs text-gray-500 mt-1">
-                  {isActive ? 'Currently Active' : 'Currently Inactive'}
+                  {isActive ? "Currently Active" : "Currently Inactive"}
                 </p>
               </div>
               <button
@@ -175,12 +206,14 @@ export default function EditCategory() {
                 id="activeSwitch"
                 onClick={() => setIsActive(!isActive)}
                 className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
-                  isActive ? 'bg-gradient-to-r from-purple-600 to-blue-600' : 'bg-gray-300'
+                  isActive
+                    ? "bg-gradient-to-r from-purple-600 to-blue-600"
+                    : "bg-gray-300"
                 }`}
               >
                 <span
                   className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform duration-200 ${
-                    isActive ? 'translate-x-6' : 'translate-x-1'
+                    isActive ? "translate-x-6" : "translate-x-1"
                   }`}
                 />
               </button>
@@ -192,7 +225,7 @@ export default function EditCategory() {
             <h2 className="text-xl font-bold text-gray-900 mb-4">
               Products in this Category ({categoryProducts.length})
             </h2>
-            
+
             {categoryProducts.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
                 <p>No products in this category</p>
@@ -201,12 +234,17 @@ export default function EditCategory() {
               <div className="space-y-3">
                 {categoryProducts.map((product) => (
                   <div
-                    key={product.id}
+                    key={product._id}
                     className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200"
                   >
                     <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900">{product.name}</h3>
-                      <p className="text-sm text-gray-600">Price: ${product.price.toFixed(2)} | Stock: {product.stock}</p>
+                      <h3 className="font-semibold text-gray-900">
+                        {product.name}
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        Price: {product.final_price} | Stock:{" "}
+                        {product.inventory_quantity}
+                      </p>
                     </div>
                     <button
                       onClick={() => handleDeleteProductClick(product)}
@@ -257,7 +295,7 @@ export default function EditCategory() {
         onClose={() => setShowDeleteWarning(false)}
         productCount={categoryProducts.length}
       />
-      
+
       <DeleteConfirmDialog
         isOpen={showDeleteConfirm}
         onClose={() => setShowDeleteConfirm(false)}

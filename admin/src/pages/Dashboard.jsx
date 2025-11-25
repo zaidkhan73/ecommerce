@@ -1,4 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
+import axios from "axios";
+import { serverUrl } from "../App";
+
 import {
   Package,
   Grid,
@@ -10,6 +13,7 @@ import {
   Menu,
   Edit2,
   Trash2,
+  Eye
 } from "lucide-react";
 import Sidebar from "../components/Sidebar";
 import { useNavigate } from "react-router-dom";
@@ -21,30 +25,20 @@ function Dashboard() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const dropdownRef = useRef(null);
-
-  const [products] = useState([
-    { id: 1, name: "Wireless Headphones", price: "$89.99", status: "Active" },
-    { id: 2, name: "Smart Watch Pro", price: "$299.99", status: "Active" },
-    { id: 3, name: "Laptop Stand", price: "$45.50", status: "Low Stock" },
-    { id: 4, name: "USB-C Hub", price: "$59.99", status: "Active" },
-    {
-      id: 5,
-      name: "Mechanical Keyboard",
-      price: "$129.99",
-      status: "Out of Stock",
-    },
-  ]);
-
+  const [products, setProducts] = useState([]);
+  const [productCount, setProductCount] = useState()
+  const [categoryCount, setCategoryCount] = useState()
+  
   const stats = [
     {
       title: "Total Products",
-      value: "248",
+      value: productCount,
       icon: Package,
       color: "from-purple-500 to-purple-600",
     },
     {
       title: "Product Categories",
-      value: "12",
+      value: categoryCount,
       icon: Grid,
       color: "from-blue-500 to-blue-600",
     },
@@ -53,12 +47,6 @@ function Dashboard() {
       value: "34",
       icon: Clock,
       color: "from-orange-500 to-orange-600",
-    },
-    {
-      title: "Sales Analytics",
-      value: "$12.5k",
-      icon: TrendingUp,
-      color: "from-green-500 to-green-600",
     },
   ];
 
@@ -78,32 +66,53 @@ function Dashboard() {
     setOpenDropdown(openDropdown === productId ? null : productId);
   };
 
-  const handleEdit = (product) => {
-    console.log("Edit product:", product);
-    // Navigate to edit page or open edit modal
-    // navigate(`/products/edit/${product.id}`);
-    setOpenDropdown(null);
-  };
-
-  const handleDelete = (product) => {
-    console.log("Delete product:", product);
-    // Show delete confirmation dialog
-    // Or directly delete the product
-    setOpenDropdown(null);
-  };
-
   const getStatusColor = (status) => {
     switch (status) {
-      case "Active":
+      case "in_stock":
         return "bg-green-100 text-green-700";
-      case "Low Stock":
-        return "bg-yellow-100 text-yellow-700";
-      case "Out of Stock":
+      case "out_of_stock":
         return "bg-red-100 text-red-700";
       default:
         return "bg-gray-100 text-gray-700";
     }
   };
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get(`${serverUrl}/api/product/getAll-product`, {
+          withCredentials: true,
+        });
+
+        console.log("Fetched:", res.data.count);
+        setProductCount(res.data.count)
+        
+        setProducts(
+          res.data.products.sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+          )
+        );
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  useEffect(()=>{
+      const fetchCategories = async () => {
+        try {
+          const res = await axios.get(`${serverUrl}/api/category/getAll-categories`,{withCredentials: true})
+          console.log("getAllCategories: ",res.data.data.length)
+          setCategoryCount(res.data.data.length)
+        } catch (error) {
+          console.log(error)
+        }
+      }
+      fetchCategories();
+      
+    },[])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -165,7 +174,10 @@ function Dashboard() {
               Quick Actions
             </h2>
             <div className="flex flex-wrap gap-4">
-              <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105 font-medium">
+              <button
+                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105 font-medium"
+                onClick={() => navigate("/products/new")}
+              >
                 <Plus className="w-5 h-5" />
                 Add Product
               </button>
@@ -205,9 +217,9 @@ function Dashboard() {
             </div>
 
             <div className="space-y-3">
-              {products.map((product) => (
+              {products.slice(0, 3).map((product) => (
                 <div
-                  key={product.id}
+                  key={product._id}
                   className="p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors duration-200 border border-gray-200
                  flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
                 >
@@ -224,7 +236,7 @@ function Dashboard() {
                    w-full sm:w-auto"
                   >
                     <span className="font-bold text-gray-800 min-w-[70px] text-sm sm:text-base">
-                      {product.price}
+                      ₹{product.product_price}
                     </span>
 
                     <span
@@ -238,28 +250,32 @@ function Dashboard() {
                     {/* Dropdown Menu */}
                     <div className="relative" ref={dropdownRef}>
                       <button
-                        onClick={() => toggleDropdown(product.id)}
+                        onClick={() => toggleDropdown(product._id)}
                         className="p-2 hover:bg-gray-200 rounded-lg transition-colors duration-200"
                       >
                         <MoreVertical className="w-5 h-5 text-gray-600" />
                       </button>
 
                       {/* Dropdown Content */}
-                      {openDropdown === product.id && (
+                      {openDropdown === product._id && (
                         <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
                           <button
-                            onClick={() => handleEdit(product)}
+                            onClick={() =>
+                              navigate(`/products/edit/${product._id}`)
+                            }
                             className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors duration-200"
                           >
                             <Edit2 className="w-4 h-4" />
                             Edit
                           </button>
                           <button
-                            onClick={() => handleDelete(product)}
-                            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200"
+                            onClick={() =>
+                              navigate(`/products/edit/${product._id}`)
+                            }
+                            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors duration-200"
                           >
-                            <Trash2 className="w-4 h-4" />
-                            Delete
+                            <Eye className="w-4 h-4" />
+                            View
                           </button>
                         </div>
                       )}

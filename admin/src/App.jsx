@@ -3,10 +3,13 @@ import Login from './pages/login'
 import Dashboard from './pages/Dashboard'
 import Products from './pages/Products'
 import Categories from './pages/Categories'
-import Notifications from './pages/Notifications'
 import ProtectedRoute from './components/ProtectedRoute'
 import { AuthProvider } from './context/AuthProvider'
 import EditCategory from './pages/EditCategory'
+import AddProduct from './pages/AddProduct'
+import EditProductPage from './pages/EditProduct'
+import Orders from './pages/Orders'
+import ViewProduct from './pages/ViewProduct'
 
 export const serverUrl = 'http://localhost:8000'
 
@@ -35,6 +38,33 @@ function App() {
         />
 
         <Route
+          path="/products/new"
+          element={
+            <ProtectedRoute>
+              <AddProduct />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/products/edit/:id"
+          element={
+            <ProtectedRoute>
+              <EditProductPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/products/:id"
+          element={
+            <ProtectedRoute>
+              <ViewProduct />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="/categories"
           element={
             <ProtectedRoute>
@@ -51,11 +81,12 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
-          path="/notifications"
+          path="/orders"
           element={
             <ProtectedRoute>
-              <Notifications />
+              <Orders />
             </ProtectedRoute>
           }
         />

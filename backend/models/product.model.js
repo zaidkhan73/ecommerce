@@ -3,7 +3,8 @@ import mongoose from "mongoose";
 const productSchema = new mongoose.Schema({
     name:{
         type:String,
-        required:true
+        required:true,
+        unique:true
     },
     product_description:{
         type:String,
@@ -13,9 +14,17 @@ const productSchema = new mongoose.Schema({
         type:Number,
         required:true
     },
-    product_image:{
-        type:String,
+    final_price:{
+        type:Number,
+        required:true
     },
+    product_image: [
+  {
+    url: { type: String, required: true },
+    public_id: { type: String, required: true }
+  }
+],
+
     status:{
         type:String,
         enum:['in_stock','out_of_stock'],
@@ -43,5 +52,39 @@ const productSchema = new mongoose.Schema({
 },{
     timestamps:true
 })
+
+
+productSchema.pre("save", function (next) {
+  if (this.inventory_quantity === 0) {
+    this.status = "out_of_stock";
+  } else {
+    this.status = "in_stock";
+  }
+  next();
+});
+
+
+productSchema.pre("findOneAndUpdate", function (next) {
+  const update = this.getUpdate();
+
+  let qty =
+    update.inventory_quantity ??
+    update.$set?.inventory_quantity;
+
+  if (qty !== undefined) {
+    // ensure $set exists
+    if (!update.$set) update.$set = {};
+
+    if (qty === 0) {
+      update.$set.status = "out_of_stock";
+    } else if (qty > 0) {
+      update.$set.status = "in_stock";
+    }
+  }
+
+  next();
+});
+
+
 
 export const Product = mongoose.model("Product",productSchema)

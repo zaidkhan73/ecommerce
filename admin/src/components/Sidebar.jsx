@@ -31,7 +31,7 @@ function Sidebar({ isOpen, onClose }) {
     { icon: LayoutDashboard, label: "Dashboard", path: "/" },
     { icon: Package, label: "Products", path: "/products" },
     { icon: Layers, label: "Categories", path: "/categories" },
-    { icon: Bell, label: "Notifications", path: "/notifications" },
+    { icon: Bell, label: "Orders", path: "/orders" },
   ];
 
   const handleLogout = async() => {

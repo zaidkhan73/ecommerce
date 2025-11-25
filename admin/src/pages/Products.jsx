@@ -1,104 +1,80 @@
-import React from "react";
-import { Search, PlusCircle, Edit2, Image, Menu, X, LayoutDashboard, Box, Layers, Bell } from 'lucide-react';
+import React, { useEffect, useRef } from "react";
+import {
+  Search,
+  PlusCircle,
+  Edit2,
+  Image,
+  Menu, Eye, MoreVertical,
+  X,
+  LayoutDashboard,
+  Box,
+  Layers,
+  Bell,
+} from "lucide-react";
 import Sidebar from "../components/Sidebar";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { serverUrl } from "../App";
+import axios from "axios";
 
 function Products() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [products] = useState([
-    {
-      id: 1,
-      name: "Wireless Headphones",
-      category: "Electronics",
-      price: 89.99,
-      stock: 45,
-      status: "Active",
-      imageUrl: null,
-    },
-    {
-      id: 2,
-      name: "Smart Watch Pro",
-      category: "Wearables",
-      price: 299.99,
-      stock: 23,
-      status: "Active",
-      imageUrl: null,
-    },
-    {
-      id: 3,
-      name: "Laptop Stand",
-      category: "Accessories",
-      price: 45.5,
-      stock: 8,
-      status: "Active",
-      imageUrl: null,
-    },
-    {
-      id: 4,
-      name: "USB-C Hub",
-      category: "Accessories",
-      price: 59.99,
-      stock: 67,
-      status: "Active",
-      imageUrl: null,
-    },
-    {
-      id: 5,
-      name: "Mechanical Keyboard",
-      category: "Electronics",
-      price: 129.99,
-      stock: 0,
-      status: "Out of Stock",
-      imageUrl: null,
-    },
-    {
-      id: 6,
-      name: "Gaming Mouse",
-      category: "Electronics",
-      price: 79.99,
-      stock: 34,
-      status: "Active",
-      imageUrl: null,
-    },
-    {
-      id: 7,
-      name: "Desk Lamp",
-      category: "Office",
-      price: 39.99,
-      stock: 0,
-      status: "Inactive",
-      imageUrl: null,
-    },
-    {
-      id: 8,
-      name: "Webcam HD",
-      category: "Electronics",
-      price: 89.99,
-      stock: 56,
-      status: "Active",
-      imageUrl: null,
-    },
-  ]);
+  const navigate = useNavigate();
+  const [products, setProducts] = useState([]);
+  const [openDropdown, setOpenDropdown] = useState(null);
+  const dropdownRef = useRef({});
 
-  const filteredProducts = products.filter(
-    (product) =>
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.category.toLowerCase().includes(searchTerm.toLowerCase())
+   useEffect(() => {
+  const handleClick = (e) => {
+    const openRef = dropdownRef.current[openDropdown];
+    if (openRef && !openRef.contains(e.target)) setOpenDropdown(null);
+  };
+
+  document.addEventListener("mousedown", handleClick);
+  return () => document.removeEventListener("mousedown", handleClick);
+}, [openDropdown]);
+
+
+  const toggleDropdown = (productId) => {
+    setOpenDropdown(openDropdown === productId ? null : productId);
+  };
+
+
+
+  const filteredProducts = products.filter((product) =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const getStatusStyle = (status) => {
-    switch (status) {
-      case "Active":
-        return "bg-green-100 text-green-700";
-      case "Inactive":
-        return "bg-gray-100 text-gray-700";
-      case "Out of Stock":
-        return "bg-red-100 text-red-700";
-      default:
-        return "bg-gray-100 text-gray-700";
-    }
-  };
+  switch (status) {
+    case "in_stock":
+      return "bg-green-100 text-green-700";
+    case "out_of_stock":
+      return "bg-red-100 text-red-700";
+    default:
+      return "bg-gray-100 text-gray-700";
+  }
+};
+
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get(`${serverUrl}/api/product/getAll-product`, {
+          withCredentials: true,
+        });
+
+        console.log("Fetched:", res.data.products);
+        setProducts(res.data.products);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
@@ -127,7 +103,7 @@ function Products() {
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold text-gray-900">Products</h2>
             <button
-  className="
+              className="
     flex items-center gap-2 
     px-4 py-2 md:px-6 md:py-3 
     bg-gradient-to-r from-purple-600 to-blue-600 
@@ -135,22 +111,24 @@ function Products() {
     hover:shadow-lg transition-all duration-300 
     transform hover:scale-105 
     font-medium
-    text-sm md:text-base
-  "
->
-  <PlusCircle className="w-4 h-4 md:w-5 md:h-5" />
+    text-sm md:text-base"
+              onClick={() => navigate("/products/new")}
+            >
+              <PlusCircle className="w-4 h-4 md:w-5 md:h-5" />
 
-  {/* Mobile: "New", Desktop: "Add New Category" */}
-  <span className="md:hidden">New</span>
-  <span className="hidden md:inline">Add New Product</span>
-</button>
+              {/* Mobile: "New", Desktop: "Add New Category" */}
+              <span className="md:hidden">New</span>
+              <span className="hidden md:inline">Add New Product</span>
+            </button>
           </div>
 
           {/* Card */}
           <div className="bg-white rounded-xl shadow-md border border-gray-100">
             {/* Card Header */}
             <div className="p-6 border-b border-gray-200">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Product List</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">
+                Product List
+              </h3>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <input
@@ -169,62 +147,121 @@ function Products() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-gray-200">
-                      <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm w-20">Image</th>
-                      <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm">Name</th>
-                      <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm">Category</th>
-                      <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm">Price</th>
-                      <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm">Stock</th>
-                      <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm">Status</th>
-                      <th className="text-right py-3 px-4 font-semibold text-gray-700 text-sm">Actions</th>
+                      <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm w-20">
+                        Image
+                      </th>
+                      <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm">
+                        Name
+                      </th>
+                      <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm">
+                        Category
+                      </th>
+                      <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm">
+                        Price
+                      </th>
+                      <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm">
+                        Stock
+                      </th>
+                      <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm">
+                        Status
+                      </th>
+                      <th className="text-right py-3 px-4 font-semibold text-gray-700 text-sm">
+                        Actions
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredProducts.length === 0 ? (
                       <tr>
-                        <td colSpan="7" className="text-center py-8 text-gray-500">
+                        <td
+                          colSpan="7"
+                          className="text-center py-8 text-gray-500"
+                        >
                           No products found matching your search.
                         </td>
                       </tr>
                     ) : (
                       filteredProducts.map((product) => (
-                        <tr key={product.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-150">
+                        <tr
+                          key={product._id}
+                          className="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-150"
+                        >
                           <td className="py-4 px-4">
                             <div className="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
-                              {product.imageUrl ? (
-                                <img
-                                  src={product.imageUrl}
-                                  alt={product.name}
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
+                              {product.product_image && product.product_image.length > 0 ? (
+  <img
+    src={product.product_image[0].url}   // sirf first image dikha rahe hain list me
+    alt={product.name}
+    className="w-full h-full object-cover"
+  />
+) : (
                                 <Image className="w-5 h-5 text-gray-400" />
                               )}
                             </div>
                           </td>
+
                           <td className="py-4 px-4">
                             <button className="font-medium text-gray-900 hover:text-purple-600 transition-colors duration-200 text-left max-w-[200px] truncate block">
                               {product.name}
                             </button>
                           </td>
+
                           <td className="py-4 px-4 text-gray-700 max-w-[150px] truncate">
-                            {product.category}
+                            {product.product_category?.name}
                           </td>
+
                           <td className="py-4 px-4 text-gray-900 font-semibold">
-                            ${product.price.toFixed(2)}
+                            ₹{product.final_price}
                           </td>
+
                           <td className="py-4 px-4 text-gray-700">
-                            {product.stock}
+                            {product.inventory_quantity}
                           </td>
+
                           <td className="py-4 px-4">
-                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusStyle(product.status)}`}>
-                              {product.status}
+                            <span
+                              className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusStyle(
+                                product.status
+                              )}`}
+                            >
+                              {product.status === "in_stock" ? "In Stock" : "Out of Stock"}
+
                             </span>
                           </td>
+
+                          {/* ACTIONS */}
                           <td className="py-4 px-4 text-right">
-                            <button className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-purple-500 hover:text-purple-600 transition-all duration-200">
-                              <Edit2 className="w-4 h-4" />
-                              Edit
-                            </button>
+                            <div
+                              className="relative inline-block"
+                              ref={(el) => (dropdownRef.current[product._id] = el)}
+                            >
+                              <button
+                                onClick={() => toggleDropdown(product._id)}
+                                className="p-2 hover:bg-gray-200 rounded-lg transition-colors duration-200"
+                              >
+                                <MoreVertical className="w-5 h-5 text-gray-600" />
+                              </button>
+
+                              {openDropdown === product._id && (
+                                <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
+                                  <button
+                                    onClick={() => navigate(`/products/${product._id}`)}
+                                    className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors duration-200"
+                                  >
+                                    <Eye className="w-4 h-4" />
+                                    View
+                                  </button>
+
+                                  <button
+                                    onClick={() => navigate(`/products/edit/${product._id}`)}
+                                    className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors duration-200"
+                                  >
+                                    <Edit2 className="w-4 h-4" />
+                                    Edit
+                                  </button>
+                                </div>
+                              )}
+                            </div>
                           </td>
                         </tr>
                       ))
