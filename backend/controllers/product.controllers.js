@@ -12,6 +12,7 @@ const addProduct = async (req, res) => {
       status,
       product_discount,
       inventory_quantity,
+      minimum,
       product_category,
       final_price,
     } = req.body;
@@ -50,6 +51,7 @@ const addProduct = async (req, res) => {
       product_rating: 0,
       product_discount: product_discount || 0,
       inventory_quantity: inventory_quantity || 0,
+      minimum: minimum || 1,
       product_category,
       final_price,
     });

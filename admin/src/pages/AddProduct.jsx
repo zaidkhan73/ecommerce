@@ -30,6 +30,7 @@ export default function AddProduct() {
   const [imagePreview, setImagePreview] = useState(null);
   const [status, setStatus] = useState("in_stock");
   const [quantity, setQuantity] = useState("");
+  const [minimum, setMinimum] = useState("")
   const [categories, setCategories] = useState([]); // list of categories
   const [selectedCategory, setSelectedCategory] = useState(""); // selected category
 
@@ -81,6 +82,7 @@ export default function AddProduct() {
     formData.append("product_price", price);
     formData.append("product_discount", discount);
     formData.append("inventory_quantity", quantity);
+    formData.append("minimum",minimum);
     formData.append("product_category", selectedCategory);
     formData.append("status", status);
     formData.append("final_price", calculateDiscountedPrice());
@@ -372,6 +374,26 @@ export default function AddProduct() {
                     id="quantity"
                     value={quantity}
                     onChange={(e) => setQuantity(e.target.value)}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                    placeholder="0"
+                    min="0"
+                    required
+                  />
+                </div>
+
+                {/* minimum Qauntity */}
+                <div>
+                  <label
+                    htmlFor="minimum"
+                    className="block text-sm font-semibold text-gray-700 mb-2"
+                  >
+                    Minimum quantity to purchase *
+                  </label>
+                  <input
+                    type="number"
+                    id="minimum"
+                    value={minimum}
+                    onChange={(e) => setMinimum(e.target.value)}
                     className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                     placeholder="0"
                     min="0"

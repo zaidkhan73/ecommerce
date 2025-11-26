@@ -29,6 +29,7 @@ export default function EditProductPage() {
   const [images, setImages] = useState([]);
   const [status, setStatus] = useState("");
   const [quantity, setQuantity] = useState("");
+  const [minimum, setMinimum] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("");
   const [imagePreview, setImagePreview] = useState([]);
 
@@ -64,6 +65,7 @@ export default function EditProductPage() {
       formData.append("product_price", price);
       formData.append("product_discount", discount);
       formData.append("inventory_quantity", quantity);
+      formData.append("minimum",minimum);
       formData.append("final_price", calculateDiscountedPrice());
       formData.append("product_category", selectedCategory);
       formData.append("status", status);
@@ -126,6 +128,7 @@ export default function EditProductPage() {
         setPrice(p.product_price);
         setDiscount(p.product_discount);
         setQuantity(p.inventory_quantity);
+        setMinimum(p.minimum);
         setSelectedCategory(p.product_category?._id);
         setStatus(p.status);
         // Image preview
@@ -375,6 +378,25 @@ export default function EditProductPage() {
                   id="quantity"
                   value={quantity}
                   onChange={(e) => setQuantity(e.target.value)}
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                  placeholder="0"
+                  min="0"
+                />
+              </div>
+
+              {/* minimum piece required to purchase */}
+              <div>
+                <label
+                  htmlFor="minimum"
+                  className="block text-sm font-semibold text-gray-700 mb-2"
+                >
+                  Inventory Quantity *
+                </label>
+                <input
+                  type="number"
+                  id="minimum"
+                  value={minimum}
+                  onChange={(e) => setMinimum(e.target.value)}
                   className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                   placeholder="0"
                   min="0"

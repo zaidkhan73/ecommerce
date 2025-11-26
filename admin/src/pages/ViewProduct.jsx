@@ -15,8 +15,6 @@ import { serverUrl } from "../App";
 
 export default function ViewProduct() {
   const navigate = useNavigate();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -25,8 +23,10 @@ export default function ViewProduct() {
   const [image, setImage] = useState([]);
   const [status, setStatus] = useState("");
   const [quantity, setQuantity] = useState("");
+  const [minimum, setMinimum] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [rating, setRating] = useState(0); // Product rating
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const { id } = useParams();
 
@@ -74,6 +74,7 @@ export default function ViewProduct() {
         setDiscount(p.product_discount);
         setFinalPrice(p.final_price);
         setQuantity(p.inventory_quantity);
+        setMinimum(p.minimum);
         setSelectedCategory(
           p.product_category?.name || p.product_category || "N/A"
         );
@@ -94,25 +95,6 @@ export default function ViewProduct() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 bg-white shadow-md z-30">
-        <div className="flex items-center justify-between px-4 sm:px-8 py-4">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setIsSidebarOpen(true)}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
-            >
-              <Menu className="w-6 h-6 text-gray-700" />
-            </button>
-            <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-              Product Details
-            </h1>
-          </div>
-        </div>
-      </header>
-
       {/* Main Content */}
       <div className="pt-24 p-4 sm:p-8">
         <div className="max-w-5xl mx-auto space-y-6">
@@ -129,13 +111,43 @@ export default function ViewProduct() {
           <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
             <div className="grid grid-cols-1 lg:grid-cols-2">
               {/* Product Image */}
-              <div className="p-6 bg-gray-50 flex items-center justify-center">
+              <div className="p-6 bg-gray-50 flex items-center justify-center relative">
                 {image.length > 0 ? (
-                  <img
-                    src={image[0]}
-                    alt={name}
-                    className="w-full h-64 sm:h-80 lg:h-96 object-contain rounded-lg"
-                  />
+                  <>
+                    <img
+                      src={image[currentIndex]}
+                      alt={name}
+                      className="w-full h-64 sm:h-80 lg:h-96 object-contain rounded-lg"
+                    />
+
+                    {image.length > 1 && (
+                      <>
+                        {/* Left Button */}
+                        <button
+                          onClick={() =>
+                            setCurrentIndex(
+                              currentIndex === 0
+                                ? image.length - 1
+                                : currentIndex - 1
+                            )
+                          }
+                          className="absolute left-4 bg-black/40 text-white p-2 rounded-full hover:bg-black/60"
+                        >
+                          ‹
+                        </button>
+
+                        {/* Right Button */}
+                        <button
+                          onClick={() =>
+                            setCurrentIndex((currentIndex + 1) % image.length)
+                          }
+                          className="absolute right-4 bg-black/40 text-white p-2 rounded-full hover:bg-black/60"
+                        >
+                          ›
+                        </button>
+                      </>
+                    )}
+                  </>
                 ) : (
                   <div className="w-full h-64 sm:h-80 lg:h-96 bg-gray-200 rounded-lg flex items-center justify-center">
                     <Package className="w-20 h-20 text-gray-400" />
@@ -298,14 +310,9 @@ export default function ViewProduct() {
               </div>
               <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                 <span className="text-sm font-semibold text-gray-700">
-                  Rating:
+                  minimum purchase:
                 </span>
-                <div className="flex items-center gap-1">
-                  {renderStars(rating).slice(0, 5)}
-                  <span className="text-xs text-gray-600 ml-1">
-                    ({rating.toFixed(1)})
-                  </span>
-                </div>
+                <span className="text-sm text-gray-900">{minimum} units</span>
               </div>
             </div>
           </div>

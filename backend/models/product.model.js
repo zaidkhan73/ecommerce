@@ -30,6 +30,10 @@ const productSchema = new mongoose.Schema({
         enum:['in_stock','out_of_stock'],
         default:'in_stock'
     },
+    minimum:{
+        type:Number,
+        default:1
+    },
     product_rating:{
         type:Number,
         default:0
