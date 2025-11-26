@@ -7,10 +7,15 @@ import productRouter from "./routes/product.routes.js";
 
 const app = e()
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174"
+];
+
 app.use(cors({
-    origin:"http://localhost:5173",
-    credentials:true
-}))
+  origin: allowedOrigins,
+  credentials: true,
+}));
 
 app.use(e.json())
 

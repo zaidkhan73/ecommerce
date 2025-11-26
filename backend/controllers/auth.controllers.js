@@ -212,7 +212,7 @@ const signOut = async (req,res) => {
       sameSite: "lax",
     })
     .status(200)
-    .json({ message: "Admin signed out" });
+    .json({ message: "user signed out" });
 }
 
 
@@ -294,4 +294,4 @@ const resetPassword = async(req,res)=>{
 }
 
 
-export { adminLogin, adminLogout, emailOtp, signUp, signIn, passwordOtp, verifyOtp, resetPassword };
+export { adminLogin, adminLogout, emailOtp, signUp, signIn, passwordOtp, verifyOtp, resetPassword , signOut};

@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForwordPassword";
 import HomePage from "./pages/Home";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ProductViewPage from "./pages/ProductView";
 
 export const serverUrl = "http://localhost:8000";
 
@@ -24,7 +25,17 @@ function App() {
             <HomePage/>
           }
         />
+        <Route
+          path="/product/:id"
+          element={
+            // <ProtectedRoute>
+            //   <HomePage />
+            // </ProtectedRoute>
+            <ProductViewPage/>
+          }
+        />
       </Routes>
+      
     </AuthProvider>
   );
 }

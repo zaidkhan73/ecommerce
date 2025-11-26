@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
 import { ShoppingCart, Menu, X, Package, LogOut, Grid } from 'lucide-react';
+import {useNavigate} from "react-router-dom"
+import axios from "axios"
+import { serverUrl } from '../App';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [cartCount, setCartCount] = useState(3);
+  const navigate = useNavigate()
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -12,6 +17,28 @@ const Header = () => {
   const handleMenuItemClick = (item) => {
     console.log(`${item} clicked`);
     setIsMenuOpen(false);
+  };
+
+  const handleLogout = async () => {
+    if (isLoggingOut) return; // Prevent multiple logout calls
+
+    setIsLoggingOut(true);
+
+    try {
+      const res = await axios.get(`${serverUrl}/api/auth/signout`, {
+        withCredentials: true,
+      });
+
+      // Navigate to signin page
+      navigate("/login", { replace: true });
+
+      console.log("Logged out successfully:", res);
+    } catch (error) {
+      console.log("Logout error:", error);
+      alert("failed")
+    } finally {
+      setIsLoggingOut(false);
+    }
   };
 
   return (
@@ -79,7 +106,7 @@ const Header = () => {
 
                     <button 
                       className="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors duration-150 text-left"
-                      onClick={() => handleMenuItemClick('Sign Out')}
+                      onClick={handleLogout}
                     >
                       <LogOut className="w-[18px] h-[18px] flex-shrink-0" />
                       Sign Out
