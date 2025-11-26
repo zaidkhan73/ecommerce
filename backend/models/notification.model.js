@@ -6,9 +6,9 @@ const notificationSchema = new mongoose.Schema({
         enum:['pending','confirmed','processing','delivered','canceled'],
         default:'pending'
     },
-    customer_id:{
+    user_id:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'Customer',
+        ref:'User',
         required:true
     },
     order_address:{

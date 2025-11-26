@@ -1,19 +1,20 @@
 import { useState } from "react";
 import { AuthContext } from "./AuthContext";
 
-export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    () => localStorage.getItem("isAuthenticated") === "true"
-  );
+export function AuthProvider({ children }) {
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    const token = localStorage.getItem("auth_token");
+    return !!token;
+  });
 
-  const login = () => {
+  const login = (token) => {
+    localStorage.setItem("auth_token", token);
     setIsAuthenticated(true);
-    localStorage.setItem("isAuthenticated", "true");
   };
 
   const logout = () => {
+    localStorage.removeItem("auth_token");
     setIsAuthenticated(false);
-    localStorage.removeItem("isAuthenticated");
   };
 
   return (
@@ -21,4 +22,4 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
-};
+}

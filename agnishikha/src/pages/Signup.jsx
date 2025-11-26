@@ -41,7 +41,7 @@ const [showPassword, setShowPassword] = useState(false);
     try {
       const res = await axios.post(
         `${serverUrl}/api/auth/email-otp`,
-        { email , fullName },
+        { email , username: fullName },
         { withCredentials: true }
       );
       console.log(res);
@@ -70,18 +70,17 @@ const [showPassword, setShowPassword] = useState(false);
     const res = await axios.post(
       `${serverUrl}/api/auth/signup`,
       {
-        fullName,
+        username: fullName,
         email,
         password,
         mobile,
-        role,
         otp,   // ✅ OTP bhi bhejna hoga
       },
       { withCredentials: true }
     );
 
     console.log(res.data);
-    navigate("/"); // ✅ Signup ke baad redirect
+    navigate("/home"); // ✅ Signup ke baad redirect
   } catch (error) {
     console.log("error in verifying otp : ", error);
 
