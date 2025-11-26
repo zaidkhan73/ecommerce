@@ -34,10 +34,6 @@ export const ProductCard = ({ product }) => {
             </span>
           )}
         </div>
-        
-        <button className="mt-3 w-full bg-gradient-to-r from-purple-600 to-indigo-500 text-white py-2 px-4 rounded-lg font-medium text-sm hover:from-purple-700 hover:to-indigo-600 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0">
-          Add to Cart
-        </button>
       </div>
     </div>
   );
