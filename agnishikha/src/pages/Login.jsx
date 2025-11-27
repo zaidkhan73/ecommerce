@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { serverUrl } from "../App";
 import { ClipLoader } from "react-spinners";
+import { useAuth } from "../hooks/useAuth";
 
 
 function Login() {
@@ -16,7 +17,7 @@ function Login() {
   const [isLoading, setIsLoading] = useState(false);
 
 
-  
+  const {login} = useAuth()
 
   const handleSignIn = async () => {
     setErrorMessage("");
@@ -28,6 +29,12 @@ function Login() {
         { email, password },
         { withCredentials: true }
       );
+      console.log(res.data)
+      if (res.data.success) {
+      login(res.data.user);
+      navigate("/");
+    }
+      navigate("/");
 
 
     } catch (error) {
@@ -107,7 +114,7 @@ function Login() {
 
           <div
             className="text-sm font-medium text-primary cursor-pointer text-right"
-            onClick={() => navigate("/forgotpassword")}
+            onClick={() => navigate("/forgot-password")}
           >
             Forgot password?
           </div>

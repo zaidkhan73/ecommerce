@@ -61,7 +61,7 @@ export default function ViewProduct() {
     const fetchProduct = async () => {
       try {
         const res = await axios.get(
-          `${serverUrl}/api/product/get-product/${id}`,
+          `${serverUrl}/api/product/admin/get-product/${id}`,
           { withCredentials: true }
         );
         console.log("product info:", res.data.product);

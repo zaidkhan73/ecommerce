@@ -134,7 +134,7 @@ const ProductViewPage = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
         <button
           className="flex items-center gap-2 text-gray-600 hover:text-purple-700 transition-colors duration-200"
-          onClick={() => navigate("/home")}
+          onClick={() => navigate("/")}
         >
           <ChevronLeft className="w-5 h-5" />
           <span className="text-sm font-medium">Back to Products</span>

@@ -6,6 +6,8 @@ import ForgotPassword from "./pages/ForwordPassword";
 import HomePage from "./pages/Home";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ProductViewPage from "./pages/ProductView";
+import CartPage from "./pages/Cart";
+import CheckoutPage from "./pages/Checkout";
 
 export const serverUrl = "http://localhost:8000";
 
@@ -17,21 +19,40 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route
-          path="/home"
+          path="/"
           element={
-            // <ProtectedRoute>
-            //   <HomePage />
-            // </ProtectedRoute>
-            <HomePage/>
+            <ProtectedRoute>
+              <HomePage />
+            </ProtectedRoute>
           }
         />
         <Route
           path="/product/:id"
           element={
-            // <ProtectedRoute>
-            //   <HomePage />
-            // </ProtectedRoute>
-            <ProductViewPage/>
+            <ProtectedRoute>
+              <ProductViewPage/>
+           </ProtectedRoute>
+           
+          }
+        />
+
+        <Route
+          path="/cart"
+          element={
+             <ProtectedRoute>
+               <CartPage/>
+             </ProtectedRoute>
+            
+          }
+        />
+
+        <Route
+          path="/checkout"
+          element={
+            <ProtectedRoute>
+               <CheckoutPage/>
+             </ProtectedRoute>
+           
           }
         />
       </Routes>

@@ -80,7 +80,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get(`${serverUrl}/api/product/getAll-product`, {
+        const res = await axios.get(`${serverUrl}/api/product/admin/getAll-product`, {
           withCredentials: true,
         });
 

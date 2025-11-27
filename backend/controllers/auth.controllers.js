@@ -23,15 +23,11 @@ const adminLogin = async (req, res) => {
       return res.status(400).json({ message: "Incorrect password" });
     }
 
-    const token = generateToken(admin._id);
-
-    //console.log("token",token)
-
-    res.cookie("token", token, {
+    const token = generateToken(admin._id, "admin");
+    res.cookie("admin_token", token, {
       httpOnly: true,
-      secure: false,
       sameSite: "lax",
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      secure: false,
     });
 
     return res.status(200).json({ message: "Admin logged in", token });
@@ -42,7 +38,7 @@ const adminLogin = async (req, res) => {
 
 const adminLogout = async (req, res) => {
   return res
-    .clearCookie("token", {
+    .clearCookie("admin_token", {
       httpOnly: true,
       secure: false,
       sameSite: "lax",
@@ -57,7 +53,7 @@ const adminLogout = async (req, res) => {
 
 const emailOtp = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, username } = req.body;
 
     if (!email) {
       return res.status(400).json({ message: "All fields are required" });
@@ -134,15 +130,14 @@ const signUp = async (req, res, next) => {
       throw new ApiError(500, "something went wrong while registering user");
     }
 
-    const token = generateToken(user._id);
-
     await TempUser.deleteOne({ email });
 
-    res.cookie("token", token, {
-      secure: false,
-      sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+    const token = generateToken(user._id, "user");
+
+    res.cookie("user_token", token, {
       httpOnly: true,
+      sameSite: "lax",
+      secure: false,
     });
 
     return res.status(201).json({
@@ -157,141 +152,142 @@ const signUp = async (req, res, next) => {
   }
 };
 
-const signIn = async(req,res) => {
-    try {
-        const {email, password} = req.body
-        
-        if(!email){
-            return res.status(400).json({ message: "all field reqiuired" });
-        }
+const signIn = async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-        const user = await User.findOne({email})
+    if (!email) {
+      return res.status(400).json({ message: "all field reqiuired" });
+    }
 
-        if(!user){
-            return res.status(400).json({ message: "No user found with this email" });
-        }
+    const user = await User.findOne({ email });
 
-        const isPasswordCorrect = await bcrypt.compare(password, user.password)
+    if (!user) {
+      return res.status(400).json({ message: "No user found with this email" });
+    }
 
-        if(!isPasswordCorrect){
-            return res.status(400).json({ message: "Incorrect password" });
-        }
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
-        const loggedInUser = await User.findById(user._id).select("-password")
+    if (!isPasswordCorrect) {
+      return res.status(400).json({ message: "Incorrect password" });
+    }
 
-        const token = await generateToken(user._id)
+    const loggedInUser = await User.findById(user._id).select("-password");
 
-        res.cookie("token",token,{
-        secure:false,
-        sameSite:"lax",
-        maxAge:7*24*60*60*1000,
-        httpOnly:true
-    })
+    const token = generateToken(user._id, "user");
+    res.cookie("user_token", token, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: false,
+    });
 
+     return res.status(201).json({
+      success: true,
+      user: loggedInUser,
+      message: "user logged in successfully",
+    });
+  } catch (error) {
     return res
-    .status(200)
-    .json(new ApiResponse(
-        200,
-        {
-            user: loggedInUser
-        },
-        "user signed in"
-    ))
-    } catch (error) {
-        return res
       .status(500)
       .json({ message: `Error during user SignIn: ${error}` });
-    }
-}
+  }
+};
 
-const signOut = async (req,res) => {
-    return res
-    .clearCookie("token", {
+const signOut = async (req, res) => {
+  return res
+    .clearCookie("user_token", {
       httpOnly: true,
       secure: false,
       sameSite: "lax",
     })
     .status(200)
     .json({ message: "user signed out" });
-}
+};
 
+const passwordOtp = async (req, res) => {
+  try {
+    //get user
+    const { email } = req.body;
 
-const passwordOtp = async (req,res)=>{
-    try {
-        //get user
-        const {email} = req.body
+    //find user
+    const user = await User.findOne({ email });
 
-        //find user
-        const user = await User.findOne({email})
-
-        //check if user exist
-        if(!user){
-            return res.status(400).json({
-                message:"User does not exist"
-            })
-        }
-
-        const otp = Math.floor(100000 + Math.random() * 900000).toString()
-
-        user.resetOtp = otp,
-        user.otpExpires = Date.now()+5*60*1000
-        user.isOtpVerified=false
-        await user.save()
-        await sendPasswordMail(email, otp, user.username)
-        return res.status(200).json({message:"password reset mail send successfully"})
-    } catch (error) {
-        return res.status(500).json(`error during sending otp ${error}`)
+    //check if user exist
+    if (!user) {
+      return res.status(400).json({
+        message: "User does not exist",
+      });
     }
-}
 
-const verifyOtp = async(req,res)=>{
-    try {
-        const {email, otp} = req.body
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-        const user = await User.findOne({email})
+    (user.resetOtp = otp), (user.otpExpires = Date.now() + 5 * 60 * 1000);
+    user.isOtpVerified = false;
+    await user.save();
+    await sendPasswordMail(email, otp, user.username);
+    return res
+      .status(200)
+      .json({ message: "password reset mail send successfully" });
+  } catch (error) {
+    return res.status(500).json(`error during sending otp ${error}`);
+  }
+};
 
-        if(!user || user.resetOtp !== otp || user.otpExpires < Date.now()){
-            return res.status(400).json({message: "invalid or expired otp"})
-        }
+const verifyOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
 
-        user.resetOtp=undefined
-        user.isOtpVerified=true
-        user.otpExpires=undefined
+    const user = await User.findOne({ email });
 
-        await user.save() 
-
-        return res.status(200).json({message:"otp verified successfully"})
-
-    } catch (error) {
-        return res.status(500).json(`otp verification failed ${error}`)
+    if (!user || user.resetOtp !== otp || user.otpExpires < Date.now()) {
+      return res.status(400).json({ message: "invalid or expired otp" });
     }
-}
 
+    user.resetOtp = undefined;
+    user.isOtpVerified = true;
+    user.otpExpires = undefined;
 
-const resetPassword = async(req,res)=>{
-    try {
-        const {email, password} = req.body
+    await user.save();
 
-        const user = await User.findOne({email})
+    return res.status(200).json({ message: "otp verified successfully" });
+  } catch (error) {
+    return res.status(500).json(`otp verification failed ${error}`);
+  }
+};
 
-        if(!user || !user.isOtpVerified){
-            return res.status(400).json({
-                message:"Invalid input"
-            })
-        }
+const resetPassword = async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-        const hashedPassword = await bcrypt.hash(password, 10)
+    const user = await User.findOne({ email });
 
-        user.password = hashedPassword
-        user.isOtpVerified=false
-
-        await user.save()
-
-        return res.status(200).json({message:"password reset successfull"})
-    } catch (error) {
-        return res.status(500).json(`password reset failed ${error}`)
+    if (!user || !user.isOtpVerified) {
+      return res.status(400).json({
+        message: "Invalid input",
+      });
     }
-}
 
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-export { adminLogin, adminLogout, emailOtp, signUp, signIn, passwordOtp, verifyOtp, resetPassword , signOut};
+    user.password = hashedPassword;
+    user.isOtpVerified = false;
+
+    await user.save();
+
+    return res.status(200).json({ message: "password reset successfull" });
+  } catch (error) {
+    return res.status(500).json(`password reset failed ${error}`);
+  }
+};
+
+export {
+  adminLogin,
+  adminLogout,
+  emailOtp,
+  signUp,
+  signIn,
+  passwordOtp,
+  verifyOtp,
+  resetPassword,
+  signOut,
+};

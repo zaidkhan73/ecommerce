@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ShoppingCart, Menu, X, Package, LogOut, Grid } from 'lucide-react';
 import {useNavigate} from "react-router-dom"
 import axios from "axios"
 import { serverUrl } from '../App';
 
+
+
 const Header = () => {
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [cartCount, setCartCount] = useState(3);
   const navigate = useNavigate()
@@ -41,6 +44,21 @@ const Header = () => {
     }
   };
 
+  // useEffect(()=>{
+  //   const getCartCount = async () => {
+  //     try {
+  //       const res = await axios.get(`${serverUrl}/api/cart`, {
+  //         withCredentials: true,
+  //       });
+  //       setCartCount(res.data.length);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+
+  //   getCartCount();
+  // })
+
   return (
     <div className=" bg-gray-50">
       <header className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-100">
@@ -60,7 +78,7 @@ const Header = () => {
               {/* Cart Button */}
               <button 
                 className="relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-lg text-purple-700 hover:bg-purple-50 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
-                onClick={() => console.log('Cart clicked')}
+                onClick={() => navigate("/cart")}
                 aria-label="Shopping cart"
               >
                 <ShoppingCart className="w-5 h-5" />

@@ -1,28 +1,35 @@
-    import jwt from "jsonwebtoken"
-    import dotenv from "dotenv"
-    dotenv.config()
-
-    const isAuth = async (req, res, next) => {
-        try {
-
-            const token = req.cookies?.token
-            //console.log("Raw token from cookie:", token)
-            //console.log("Cookies received:", req.cookies)
+import jwt from "jsonwebtoken"
+import dotenv from "dotenv"
+dotenv.config()
 
 
-            if (!token) {
-                return res.status(401).json({ message: "Token not found" })
-            }
 
-            const decodedToken = jwt.verify(token, process.env.JWT_SECRET)
+export const auth = (req, res, next) => {
+  const adminToken = req.cookies?.admin_token;
+  const userToken = req.cookies?.user_token;
 
-            req.userId = decodedToken.userId
-            next()
+  let token;
+  let role;
 
-        } catch (error) {
-            console.error("isAuth error:", error.message)
-            return res.status(401).json({ message: "Invalid or expired token" })
-        }
-    }
+  if (adminToken) {
+    token = adminToken;
+    role = "admin";
+  } else if (userToken) {
+    token = userToken;
+    role = "user";
+  } else {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
 
-export default isAuth
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (decoded.role !== role) return res.status(403).json({ message: "Role mismatch" });
+
+    req.user = decoded;
+    next();
+  } catch (err) {
+    return res.status(401).json({ message: "Invalid token" });
+  }
+};
+
+

@@ -73,14 +73,14 @@ const [showPassword, setShowPassword] = useState(false);
         username: fullName,
         email,
         password,
-        mobile,
+        phone:mobile,
         otp,   // ✅ OTP bhi bhejna hoga
       },
       { withCredentials: true }
     );
 
     console.log(res.data);
-    navigate("/home"); // ✅ Signup ke baad redirect
+    navigate("/"); // ✅ Signup ke baad redirect
   } catch (error) {
     console.log("error in verifying otp : ", error);
 
@@ -322,63 +322,69 @@ const [showPassword, setShowPassword] = useState(false);
           </>
         )}
 
-        {step === 2 && (
-          <>
-            <div className="flex items-center gap-4 mb-4">
-              
-              <h1 className="text-2xl font-bold text-center text-primary-900">
-                Verify Your Email
-              </h1>
-            </div>
-            <div className="mb-4">
-              <label
-                htmlFor="otp"
-                className="block text-gray-700 font-medium mb-2"
-              >
-                Enter OTP
-              </label>
-              <div className="flex gap-2 justify-center">
-                {otpDigits.map((digit, index) => (
-                  <input
-                    key={index}
-                    ref={(el) => (otpRefs.current[index] = el)}
-                    type="text"
-                    value={digit}
-                    onChange={(e) => handleOtpChange(index, e.target.value)}
-                    onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                    onPaste={handleOtpPaste}
-                    className={`w-12 h-12 text-center text-xl font-semibold border-2 rounded-lg focus:outline-none transition-colors ${
-                      errorMessage 
-                        ? "border-red-300 focus:border-red-500" 
-                        : "border-neutral-400 focus:border-primary-900"
-                    }`}
-                    maxLength="1"
-                    inputMode="numeric"
-                    pattern="\d*"
-                  />
-                ))}
-              </div>
-            </div>
-            <button
-              className={`w-full mt-4 flex items-center justify-center gap-2 border rounded-lg px-4 py-2 transition duration-200 text-white ${
-                !isOtpComplete || isLoading
-                   ? "bg-primary-300 cursor-not-allowed" 
- : "bg-primary-700 hover:bg-primary-800 cursor-pointer"
-              }`}
-              onClick={handleVerifyOtp}
-              disabled={!isOtpComplete || isLoading}
-            >
-              {isLoading ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  Verifying...
-                </>
-              ) : (
-                "Verify"
-              )}
-            </button>
-          </>
-        )}
+{step === 2 && (
+  <>
+    <div className="flex flex-col items-center mb-6">
+      <h1 className="text-2xl font-bold text-[var(--primary-600)]">
+        Verify Your Email
+      </h1>
+      <p className="text-sm text-gray-500 mt-1">
+        Enter the OTP sent to your email
+      </p>
+    </div>
+
+    <div className="mb-4 w-full">
+      <label
+        htmlFor="otp"
+        className="block text-gray-700 font-medium mb-2 text-center"
+      >
+        OTP Code
+      </label>
+
+      <div className="flex gap-3 justify-center">
+        {otpDigits.map((digit, index) => (
+          <input
+            key={index}
+            ref={(el) => (otpRefs.current[index] = el)}
+            type="text"
+            value={digit}
+            onChange={(e) => handleOtpChange(index, e.target.value)}
+            onKeyDown={(e) => handleOtpKeyDown(index, e)}
+            onPaste={handleOtpPaste}
+            className={`w-12 h-12 text-center text-xl font-semibold rounded-xl outline-none transition-all bg-white shadow-sm
+            ${errorMessage
+              ? "border-2 border-red-400 focus:border-red-500"
+              : "border border-neutral-300 focus:border-[var(--primary-300)] focus:shadow-[0_0_8px_var(--primary-300)]"
+            }`}
+            inputMode="numeric"
+            pattern="\d*"
+            maxLength="1"
+          />
+        ))}
+      </div>
+    </div>
+
+    <button
+      className={`w-full mt-5 flex items-center justify-center gap-2 rounded-xl px-4 py-3 transition-all text-white font-semibold shadow-md
+        ${!isOtpComplete || isLoading
+        ? "bg-[var(--primary-300)] cursor-not-allowed"
+        : "bg-[var(--primary)] hover:bg-[var(--primary-600)] active:scale-[0.98]"
+        }`}
+      onClick={handleVerifyOtp}
+      disabled={!isOtpComplete || isLoading}
+    >
+      {isLoading ? (
+        <>
+          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+          Verifying...
+        </>
+      ) : (
+        "Verify OTP"
+      )}
+    </button>
+  </>
+)}
+
       </div>
     </div>
   );

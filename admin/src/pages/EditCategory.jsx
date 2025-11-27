@@ -274,7 +274,7 @@ export default function EditCategory() {
             <button
               type="button"
               onClick={handleBack}
-              className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-all duration-200"
+              className="flex-1 px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 font-medium transition-all duration-200"
             >
               Cancel
             </button>

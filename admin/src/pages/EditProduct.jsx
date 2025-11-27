@@ -116,7 +116,7 @@ export default function EditProductPage() {
     const fetchProduct = async () => {
       try {
         const res = await axios.get(
-          `${serverUrl}/api/product/get-product/${id}`,
+          `${serverUrl}/api/product/admin/get-product/${id}`,
           { withCredentials: true }
         );
         console.log("product info:", res.data.product);
@@ -390,7 +390,7 @@ export default function EditProductPage() {
                   htmlFor="minimum"
                   className="block text-sm font-semibold text-gray-700 mb-2"
                 >
-                  Inventory Quantity *
+                  minimum purchase quantity
                 </label>
                 <input
                   type="number"
