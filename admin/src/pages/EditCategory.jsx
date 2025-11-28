@@ -242,7 +242,7 @@ export default function EditCategory() {
                         {product.name}
                       </h3>
                       <p className="text-sm text-gray-600">
-                        Price: {product.final_price} | Stock:{" "}
+                        Price: {product.final_price.toFixed(0)} | Stock:{" "}
                         {product.inventory_quantity}
                       </p>
                     </div>

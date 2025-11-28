@@ -5,12 +5,14 @@ import { Search, Filter, ArrowUpDown, ShoppingCart, Menu, X, Package, LogOut, Gr
 import axios from "axios"
 import { serverUrl } from "../App";
 
+
 const HomePage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
   const [products, setProducts] = useState([])
   const [categories, setCategories] = useState([])
+  const [cartCount, setCartCount] = useState("")
   const sortOptions = [
     { value: 'newest', label: 'Newest First' },
     { value: 'name-asc', label: 'Name: A-Z' },
@@ -43,6 +45,18 @@ const HomePage = () => {
   });
 
 
+  useEffect(()=>{
+    const fetchCartCount = async () => {
+      try {
+      const res = await axios.get(`${serverUrl}/api/cart`,{withCredentials:true})
+      console.log("cart count:", res.data.cart.items.length)
+      setCartCount(res.data.cart.items.length)
+    } catch (error) {
+      console.log(error)
+    }
+    }
+    fetchCartCount();
+  },[])
 
 
   useEffect(() => {
@@ -79,7 +93,7 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
+      <Header cartCount={cartCount} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Search and Filters Section */}

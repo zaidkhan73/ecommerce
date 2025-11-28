@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {  useState } from 'react';
 import { ShoppingCart, Menu, X, Package, LogOut, Grid } from 'lucide-react';
 import {useNavigate} from "react-router-dom"
 import axios from "axios"
@@ -6,10 +6,10 @@ import { serverUrl } from '../App';
 
 
 
-const Header = () => {
+const Header = ({ cartCount }) => {
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(3);
+
   const navigate = useNavigate()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
 
@@ -112,13 +112,7 @@ const Header = () => {
 
                     <div className="h-px bg-gray-100 mx-2" />
 
-                    <button 
-                      className="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors duration-150 text-left"
-                      onClick={() => handleMenuItemClick('My Orders')}
-                    >
-                      <Package className="w-[18px] h-[18px] flex-shrink-0" />
-                      My Orders
-                    </button>
+                    
 
                     <div className="h-px bg-gray-100 mx-2" />
 

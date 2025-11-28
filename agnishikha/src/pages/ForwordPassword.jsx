@@ -76,109 +76,109 @@ function ForgotPassword() {
   };
 
   const handleSendOtp = async () => {
-    // setErrorMessage("");
-    // setIsLoading(true);
+    setErrorMessage("");
+    setIsLoading(true);
 
-    // try {
-    //   const res = await axios.post(
-    //     `${serverUrl}/api/auth/password-otp`,
-    //     { email },
-    //     { withCredentials: true }
-    //   );
-    //   console.log(res);
-    setStep(2);
-    // } catch (error) {
-    //   console.log("error in sending otp : ", error);
+    try {
+      const res = await axios.post(
+        `${serverUrl}/api/auth/password-otp`,
+        { email },
+        { withCredentials: true }
+      );
+      console.log(res);
+      setStep(2);
+    } catch (error) {
+      console.log("error in sending otp : ", error);
 
-    //   if (error.response) {
-    //     if (error.response.status === 400) {
-    //       setErrorMessage("Invalid email ID");
-    //     } else {
-    //       setErrorMessage("Something went wrong. Please try again.");
-    //     }
-    //   } else if (error.request) {
-    //     setErrorMessage("Network error. Please check your connection.");
-    //   } else {
-    //     setErrorMessage("Something went wrong. Please try again.");
-    //   }
-    // } finally {
-    //   setIsLoading(false);
-    // }
+      if (error.response) {
+        if (error.response.status === 400) {
+          setErrorMessage("Invalid email ID");
+        } else {
+          setErrorMessage("Something went wrong. Please try again.");
+        }
+      } else if (error.request) {
+        setErrorMessage("Network error. Please check your connection.");
+      } else {
+        setErrorMessage("Something went wrong. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleVerifyOtp = async () => {
-    // setErrorMessage("");
-    // setIsLoading(true);
+    setErrorMessage("");
+    setIsLoading(true);
 
-    // try {
-    //   const res = await axios.post(
-    //     `${serverUrl}/api/auth/verify-otp`,
-    //     { email, otp },
-    //     { withCredentials: true }
-    //   );
-    //   console.log(res);
-        setStep(3);
-    // } catch (error) {
-    //   console.log("error in verification of otp : ", error);
+    try {
+      const res = await axios.post(
+        `${serverUrl}/api/auth/verify-otp`,
+        { email, otp },
+        { withCredentials: true }
+      );
+      console.log(res);
+      setStep(3);
+    } catch (error) {
+      console.log("error in verification of otp : ", error);
 
-    //   if (error.response) {
-    //     if (error.response.status === 400) {
-    //       setErrorMessage("Incorrect OTP");
-    //     } else {
-    //       setErrorMessage("Something went wrong. Please try again.");
-    //     }
-    //   } else if (error.request) {
-    //     setErrorMessage("Network error. Please check your connection.");
-    //   } else {
-    //     setErrorMessage("Something went wrong. Please try again.");
-    //   }
-    // } finally {
-    //   setIsLoading(false);
-    // }
+      if (error.response) {
+        if (error.response.status === 400) {
+          setErrorMessage("Incorrect OTP");
+        } else {
+          setErrorMessage("Something went wrong. Please try again.");
+        }
+      } else if (error.request) {
+        setErrorMessage("Network error. Please check your connection.");
+      } else {
+        setErrorMessage("Something went wrong. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleResetPassword = async () => {
-    // setPasswordError("");
-    // setErrorMessage("");
+    setPasswordError("");
+    setErrorMessage("");
 
-    // if (password !== confirmPassword) {
-    //   setPasswordError("Passwords do not match");
-    //   return;
-    // }
+    if (password !== confirmPassword) {
+      setPasswordError("Passwords do not match");
+      return;
+    }
 
-    // // (Optional) Basic password policy: at least 6 chars, letters + numbers
-    // const hasLength = password.length >= 6;
-    // const hasLetter = /[A-Za-z]/.test(password);
-    // const hasNumber = /[0-9]/.test(password);
+    // (Optional) Basic password policy: at least 6 chars, letters + numbers
+    const hasLength = password.length >= 6;
+    const hasLetter = /[A-Za-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
 
-    // if (!hasLength || !hasLetter || !hasNumber) {
-    //   setPasswordError("Password must be at least 6 characters and include letters and numbers");
-    //   return;
-    // }
+    if (!hasLength || !hasLetter || !hasNumber) {
+      setPasswordError("Password must be at least 6 characters and include letters and numbers");
+      return;
+    }
 
-    // setIsLoading(true);
+    setIsLoading(true);
 
-    // try {
-    //   const res = await axios.post(
-    //     `${serverUrl}/api/auth/reset-password`,
-    //     { email, password },
-    //     { withCredentials: true }
-    //   );
-    //   console.log(res);
-     navigate("/login");
-    // } catch (error) {
-    //   console.log("error in reset password : ", error);
+    try {
+      const res = await axios.post(
+        `${serverUrl}/api/auth/reset-password`,
+        { email, password },
+        { withCredentials: true }
+      );
+      console.log(res);
+      navigate("/login");
+    } catch (error) {
+      console.log("error in reset password : ", error);
 
-    //   if (error.response) {
-    //     setErrorMessage("Failed to reset password. Please try again.");
-    //   } else if (error.request) {
-    //     setErrorMessage("Network error. Please check your connection.");
-    //   } else {
-    //     setErrorMessage("Something went wrong. Please try again.");
-    //   }
-    // } finally {
-    //   setIsLoading(false);
-    // }
+      if (error.response) {
+        setErrorMessage("Failed to reset password. Please try again.");
+      } else if (error.request) {
+        setErrorMessage("Network error. Please check your connection.");
+      } else {
+        setErrorMessage("Something went wrong. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Clear error when user starts typing in email field

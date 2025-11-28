@@ -2,9 +2,8 @@ import jwt from "jsonwebtoken"
 import dotenv from "dotenv"
 dotenv.config()
 
-
-
 export const auth = (req, res, next) => {
+
   const adminToken = req.cookies?.admin_token;
   const userToken = req.cookies?.user_token;
 

@@ -1,3 +1,4 @@
+import { request } from "express";
 import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema({
@@ -28,30 +29,31 @@ const orderSchema = new mongoose.Schema({
 
   order_status: {
     type: String,
-    enum: ["placed", "confirmed", "shipped", "delivered", "cancelled"],
+    enum: ["placed", "delivered", "cancelled"],
     default: "placed"
   },
 
   payment_method:{
         type:String,
-        enum:['cash_on_delivery','online_payment'],
+        enum:['split_online_cod','online_payment'],
         required:true
   },
 
   payment_status: {
     type: String,
-    enum: ["pending", "paid", "refunded"],
-    default: "pending"
+    enum: [ "partial_paid", "paid", "pending", "partial_pending"],
+    required:true
   },
 
   address: {
-    full_name: String,
-    phone: String,
-    address_line: String,
-    city: String,
-    state: String,
-    pincode: String
-  }
+    type: String,
+    required:true
+  },
+
+  online_amount: Number,
+cod_amount: Number,
+discount: Number,
+
 
 }, { timestamps: true });
 

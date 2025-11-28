@@ -203,7 +203,7 @@ export const sendPasswordMail = async (to, otp, username) => {
     <body>
         <div class="email-container">
             <div class="header">
-                <h1>🍴 Forksy Password Reset</h1>
+                <h1>🍴 Agnishikha Password Reset</h1>
                 <p>Secure your food delivery account</p>
             </div>
             
@@ -213,7 +213,7 @@ export const sendPasswordMail = async (to, otp, username) => {
                 </div>
                 
                 <div class="message">
-                    We received a request to reset your Forksy account password. To keep your 
+                    We received a request to reset your Agnishikha account password. To keep your 
                     food delivery account secure, please use the One-Time Password (OTP) below:
                 </div>
                 
@@ -240,10 +240,10 @@ export const sendPasswordMail = async (to, otp, username) => {
             </div>
             
             <div class="footer">
-                <p>This is an automated message from Forksy Food Delivery.</p>
+                <p>This is an automated message from Agnishikha Food Delivery.</p>
                 <div class="contact">
-                    Need help? Contact us at support@forksy.com<br>
-                    © 2024 Forksy. All rights reserved.
+                    Need help? Contact us at support@Agnishikha.com<br>
+                    © 2024 Agnishikha. All rights reserved.
                 </div>
             </div>
         </div>
@@ -541,7 +541,7 @@ export const sendVerificationMail = async (to, otp, username,  timestamp = new D
 <body>
     <div class="email-container">
         <div class="header">
-            <h1>🍴 Forksy Sign In Verification</h1>
+            <h1> Agnishikha Sign In Verification</h1>
             <p>Confirm your identity to access your account</p>
         </div>
         
@@ -551,7 +551,7 @@ export const sendVerificationMail = async (to, otp, username,  timestamp = new D
             </div>
             
             <div class="message">
-                We detected a sign-in attempt to your Forksy account. To ensure the security of 
+                We detected a sign-in attempt to your Agnishikha account. To ensure the security of 
                 your account and complete the sign-in process, please verify your identity using 
                 the One-Time Password (OTP) below:
             </div>
@@ -566,7 +566,7 @@ export const sendVerificationMail = async (to, otp, username,  timestamp = new D
                 <h3>🔐 Sign In Details:</h3>
                 <p>
                     This verification is required because we want to ensure that only you can 
-                    access your Forksy account. Enter the OTP above to complete your sign-in 
+                    access your Agnishikha account. Enter the OTP above to complete your sign-in 
                     and start exploring delicious food options!
                 </p>
             </div>
@@ -597,7 +597,7 @@ export const sendVerificationMail = async (to, otp, username,  timestamp = new D
                 </div>
                 <div class="step">
                     <div class="step-number">2</div>
-                    <div class="step-text">Return to the Forksy sign-in page</div>
+                    <div class="step-text">Return to the Agnishikha sign-in page</div>
                 </div>
                 <div class="step">
                     <div class="step-number">3</div>
@@ -611,7 +611,7 @@ export const sendVerificationMail = async (to, otp, username,  timestamp = new D
             
             <div class="security-warning">
                 🚨 <strong>Security Alert:</strong> If you didn't attempt to sign in to your 
-                Forksy account, please secure your account immediately by changing your password 
+                Agnishikha account, please secure your account immediately by changing your password 
                 and contact our support team.
             </div>
             
@@ -628,14 +628,109 @@ export const sendVerificationMail = async (to, otp, username,  timestamp = new D
         </div>
         
         <div class="footer">
-            <p>This is an automated security message from Forksy Food Delivery.</p>
+            <p>This is an automated security message from Agnishiha Food Delivery.</p>
             <div class="contact">
-                Experiencing issues? Contact us at support@forksy.com<br>
-                © 2024 Forksy. All rights reserved.
+                Experiencing issues? Contact us at support@Agnishikha.com<br>
+                © 2024 Agnishikha. All rights reserved.
             </div>
         </div>
     </div>
 </body>
 </html>`,
+  });
+};
+
+
+export const sendNewOrderMail = async (
+  orderId,
+  userEmail,
+  payment_method,
+  total_amount,
+  online_amount,
+  cod_amount,
+  discount,
+  address,
+  timestamp = new Date().toLocaleString()
+) => {
+  const adminMail = process.env.ADMIN_EMAIL; // ADD THIS IN .env FILE
+
+  await transporter.sendMail({
+    from: process.env.EMAIL,
+    to: adminMail,
+    subject: `🛒 New Order Placed - Order #${orderId}`,
+    html: `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>New Order Notification</title>
+<style>
+  body { font-family: Arial, sans-serif; background-color: #f4f4f4; }
+  .email-container {
+    max-width: 650px;
+    background: #fff;
+    margin: auto;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #eee;
+  }
+  .header {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    padding: 20px;
+    text-align: center;
+    color: white;
+  }
+  .content {
+    padding: 25px;
+  }
+  .info-box {
+    margin-top: 15px;
+    padding: 20px;
+    background: #eef2ff;
+    border-left: 5px solid #4f46e5;
+    border-radius: 6px;
+  }
+  .info-box p { margin: 6px 0; font-size: 15px; }
+  .footer {
+    background: #fafafa;
+    padding: 18px;
+    text-align: center;
+    font-size: 12px;
+    color: #777;
+    border-top: 1px solid #ddd;
+  }
+</style>
+</head>
+
+<body>
+  <div class="email-container">
+    <div class="header">
+      <h2>📦 New Order Received!</h2>
+    </div>
+
+    <div class="content">
+      <p>Hello Admin,</p>
+      <p>A new order has been successfully placed on Agnishikha Store.</p>
+
+      <div class="info-box">
+        <p><strong>Order ID:</strong> ${orderId}</p>
+        <p><strong>User Email:</strong> ${userEmail}</p>
+        <p><strong>Payment Method:</strong> ${payment_method}</p>
+        <p><strong>Total Amount:</strong> ₹${total_amount}</p>
+        <p><strong>Paid Now:</strong> ₹${online_amount}</p>
+        <p><strong>COD Remaining:</strong> ₹${cod_amount}</p>
+        <p><strong>Discount:</strong> ₹${discount}</p>
+        <p><strong>Delivery Address:</strong> ${address}</p>
+        <p><strong>Order Time:</strong> ${timestamp}</p>
+      </div>
+
+      <p style="margin-top: 25px;">Please review and process the order from the admin dashboard.</p>
+    </div>
+
+    <div class="footer">
+      © 2024 Agnishikha. Auto Notification | Do not reply
+    </div>
+  </div>
+</body>
+</html>`
   });
 };

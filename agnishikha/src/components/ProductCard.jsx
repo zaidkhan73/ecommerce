@@ -47,7 +47,7 @@ export const ProductCard = ({ product }) => {
 
         <div className="flex items-center gap-2 mt-auto">
           <span className="text-lg sm:text-xl font-bold text-purple-700">
-            ₹{product.final_price}
+            ₹{product.final_price.toFixed(0)}
           </span>
           {product.product_discount > 0 && (
             <span className="text-sm text-gray-400 line-through">
