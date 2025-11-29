@@ -180,7 +180,7 @@ export default function EditProductPage() {
       </header>
 
       {/* Main Content */}
-      <div className="pt-24 p-8">
+      <div className="pt-8 p-8">
         <div className="max-w-4xl mx-auto space-y-6">
           {/* Back Button */}
           <button

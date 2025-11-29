@@ -2,10 +2,11 @@ import { request } from "express";
 import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema({
-  user_id: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true
+  user: {
+    id: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    name: { type: String, required: true },
+    phone: { type: String, required: true },
+    email:{type: String, required:true}
   },
 
   items: [
@@ -29,7 +30,7 @@ const orderSchema = new mongoose.Schema({
 
   order_status: {
     type: String,
-    enum: ["placed", "delivered", "cancelled"],
+    enum: ["placed", "delivered"],
     default: "placed"
   },
 
@@ -48,6 +49,19 @@ const orderSchema = new mongoose.Schema({
   address: {
     type: String,
     required:true
+  },
+  otp: {
+    type: String,
+    default: null,
+  },
+  otpExpiresAt: {
+    type: Date,
+    default: null,
+  },
+
+  isOtpVerified:{
+    type:Boolean,
+    default:false
   },
 
   online_amount: Number,

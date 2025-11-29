@@ -734,3 +734,93 @@ export const sendNewOrderMail = async (
 </html>`
   });
 };
+
+
+export const sendDeliveryOtpMail = async (
+  userName,
+  userEmail,
+  orderId,
+  otp,
+  timestamp = new Date().toLocaleString()
+) => {
+  await transporter.sendMail({
+    from: process.env.EMAIL,
+    to: userEmail,
+    subject: `🚚 Delivery Verification OTP - Order #${orderId}`,
+    html: `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Delivery OTP</title>
+<style>
+  body { font-family: Arial, sans-serif; background-color: #f4f4f4; }
+  .email-container {
+    max-width: 650px;
+    background: #fff;
+    margin: auto;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #eee;
+  }
+  .header {
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    padding: 20px;
+    text-align: center;
+    color: white;
+  }
+  .content {
+    padding: 25px;
+  }
+  .otp-box {
+    margin-top: 20px;
+    padding: 20px;
+    background: #dcfce7;
+    border-left: 5px solid #16a34a;
+    border-radius: 6px;
+    text-align: center;
+  }
+  .otp-code {
+    font-size: 32px;
+    letter-spacing: 5px;
+    font-weight: bold;
+    color: #166534;
+  }
+  .footer {
+    background: #fafafa;
+    padding: 18px;
+    text-align: center;
+    font-size: 12px;
+    color: #777;
+    border-top: 1px solid #ddd;
+  }
+</style>
+</head>
+
+<body>
+  <div class="email-container">
+    <div class="header">
+      <h2>🚚 Order Out for Delivery</h2>
+    </div>
+
+    <div class="content">
+      <p>Hi <strong>${userName}</strong>,</p>
+      <p>Your order <strong>#${orderId}</strong> is now out for delivery 🎉</p>
+      <p>Please provide the OTP below to the delivery person upon arrival:</p>
+
+      <div class="otp-box">
+        <p class="otp-code">${otp}</p>
+      </div>
+
+      <p style="margin-top: 5px;">Timestamp: <strong>${timestamp}</strong></p>
+      
+      <p style="margin-top: 25px;">⚠️ Keep this OTP confidential. Do not share with anyone except the delivery partner.</p>
+    </div>
+
+    <div class="footer">
+      © 2024 Agnishikha. Secure Delivery Notification
+    </div>
+  </div>
+</body>
+</html>`
+  });
+};

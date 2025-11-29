@@ -96,7 +96,7 @@ export default function ViewProduct() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Main Content */}
-      <div className="pt-24 p-4 sm:p-8">
+      <div className="pt-8 p-4 sm:p-8">
         <div className="max-w-5xl mx-auto space-y-6">
           {/* Back Button */}
           <button

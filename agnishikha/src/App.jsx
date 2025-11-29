@@ -8,6 +8,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import ProductViewPage from "./pages/ProductView";
 import CartPage from "./pages/Cart";
 import CheckoutPage from "./pages/Checkout";
+import MyOrders from "./pages/MyOrders";
 
 export const serverUrl = "http://localhost:8000";
 
@@ -51,6 +52,16 @@ function App() {
           element={
             <ProtectedRoute>
                <CheckoutPage/>
+             </ProtectedRoute>
+           
+          }
+        />
+
+        <Route
+          path="/orders"
+          element={
+            <ProtectedRoute>
+               <MyOrders/>
              </ProtectedRoute>
            
           }

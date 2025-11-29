@@ -1,10 +1,15 @@
 import express from "express";
-import { auth } from "../middlewares/isAuth.js";
-import { createOrder, verifyPayment } from "../controllers/order.controllers.js";
+import { adminAuth, userAuth } from "../middlewares/isAuth.js";
+import { createOrder, getOrders, sendOrderOtp, verifyDeliveryOtp, verifyPayment } from "../controllers/order.controllers.js";
 
 const orderRouter = express.Router();
 
-orderRouter.post("/create", auth, createOrder);
-orderRouter.post("/verify", auth, verifyPayment);
+orderRouter.post("/create", userAuth, createOrder);
+orderRouter.post("/verify", userAuth, verifyPayment);
+orderRouter.get("/user",userAuth,getOrders)
+orderRouter.get("/send-otp/:orderId",adminAuth,sendOrderOtp)
+orderRouter.post("/verify-otp", adminAuth, verifyDeliveryOtp);
+orderRouter.get("/admin",adminAuth,getOrders)
+
 
 export default orderRouter;

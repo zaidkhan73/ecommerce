@@ -17,10 +17,6 @@ const Header = ({ cartCount }) => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const handleMenuItemClick = (item) => {
-    console.log(`${item} clicked`);
-    setIsMenuOpen(false);
-  };
 
   const handleLogout = async () => {
     if (isLoggingOut) return; // Prevent multiple logout calls
@@ -104,13 +100,16 @@ const Header = ({ cartCount }) => {
                   <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
                     <button 
                       className="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors duration-150 text-left"
-                      onClick={() => handleMenuItemClick('Categories')}
+                      onClick={()=>navigate("/orders")}
                     >
-                      <Grid className="w-[18px] h-[18px] flex-shrink-0" />
-                      Categories
+                     
+                      my orders
                     </button>
-
                     <div className="h-px bg-gray-100 mx-2" />
+
+                    
+
+                    
 
                     
 
