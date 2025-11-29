@@ -21,8 +21,8 @@ const adminLogin = async (req, res) => {
       const token = generateToken("env_admin", "admin");
       res.cookie("admin_token", token, {
         httpOnly: true,
-        sameSite: "lax",
-        secure: false,
+        sameSite: "none",
+        secure: true,
       });
 
       return res.status(200).json({ message: "Admin logged in via env", token });
@@ -43,8 +43,8 @@ const adminLogin = async (req, res) => {
     const token = generateToken(admin._id, "admin");
     res.cookie("admin_token", token, {
       httpOnly: true,
-      sameSite: "lax",
-      secure: false,
+      sameSite: "none",
+      secure: true,
     });
 
     return res.status(200).json({ message: "Admin logged in via DB", token });
@@ -58,8 +58,8 @@ const adminLogout = async (req, res) => {
   return res
     .clearCookie("admin_token", {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
     })
     .status(200)
     .json({ message: "Admin signed out" });
@@ -229,8 +229,8 @@ const signUp = async (req, res, next) => {
 
     res.cookie("user_token", token, {
       httpOnly: true,
-      sameSite: "lax",
-      secure: false,
+      sameSite: "none",
+      secure: true,
     });
 
     return res.status(201).json({
@@ -270,8 +270,8 @@ const signIn = async (req, res) => {
     const token = generateToken(user._id, "user");
     res.cookie("user_token", token, {
       httpOnly: true,
-      sameSite: "lax",
-      secure: false,
+      sameSite: "none",
+      secure: true,
     });
 
      return res.status(201).json({
@@ -290,8 +290,8 @@ const signOut = async (req, res) => {
   return res
     .clearCookie("user_token", {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
     })
     .status(200)
     .json({ message: "user signed out" });
