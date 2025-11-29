@@ -14,6 +14,11 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+transporter.verify((err, success) => {
+  if (err) console.log("SMTP connection error:", err);
+  else console.log("SMTP ready:", success);
+});
+
 
 export const sendPasswordMail = async (to, otp, username) => {
   await transporter.sendMail({
