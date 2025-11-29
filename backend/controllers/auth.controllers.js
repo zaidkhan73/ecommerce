@@ -158,6 +158,8 @@ const emailOtp = async (req, res, next) => {
       return res.status(400).json({ message: "user already exists" });
     }
 
+    await TempUser.deleteOne({ email });
+
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     const tempUser = new TempUser({
