@@ -11,8 +11,8 @@ import orderRouter from "./routes/order.routes.js";
 const app = e()
 
 const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:5174"
+  "https://agnishikha-admin.onrender.com",
+  "https://agnishikha.onrender.com"
 ];
 
 app.use(cors({
