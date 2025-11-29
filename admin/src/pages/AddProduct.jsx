@@ -30,7 +30,7 @@ export default function AddProduct() {
   const [imagePreview, setImagePreview] = useState(null);
   const [status, setStatus] = useState("in_stock");
   const [quantity, setQuantity] = useState("");
-  const [minimum, setMinimum] = useState("")
+  const [minimum, setMinimum] = useState("");
   const [categories, setCategories] = useState([]); // list of categories
   const [selectedCategory, setSelectedCategory] = useState(""); // selected category
 
@@ -82,7 +82,7 @@ export default function AddProduct() {
     formData.append("product_price", price);
     formData.append("product_discount", discount);
     formData.append("inventory_quantity", quantity);
-    formData.append("minimum",minimum);
+    formData.append("minimum", minimum);
     formData.append("product_category", selectedCategory);
     formData.append("status", status);
     formData.append("final_price", calculateDiscountedPrice());

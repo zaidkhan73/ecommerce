@@ -6,7 +6,7 @@ import { serverUrl } from '../App';
 import { useAuth } from '../hooks/useAuth';
 
 
-const Header = ({ cartCount }) => {
+const Header = () => {
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -83,11 +83,7 @@ const Header = ({ cartCount }) => {
                 aria-label="Shopping cart"
               >
                 <ShoppingCart className="w-5 h-5" />
-                {cartCount > 0 && (
-                  <span className="absolute top-1 right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-gradient-to-br from-red-500 to-red-600 rounded-full shadow-sm">
-                    {cartCount}
-                  </span>
-                )}
+                
               </button>
 
               {/* Menu Button with Dropdown */}
