@@ -181,9 +181,9 @@ export default function AdminOrders() {
                               })}
                             </p>
                           </div>
-                          <span className={`flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold border ${getStatusColor(order.order_status)}`}>
-                            {getStatusIcon(order.order_status)}
-                            <span className="hidden sm:inline capitalize">{order.order_status}</span>
+                          <span className={`flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold border ${getStatusColor(order.payment_status)}`}>
+                            {getStatusIcon(order.payment_status)}
+                            <span className="hidden sm:inline capitalize">{order.payment_status}</span>
                           </span>
                         </div>
                         <div className="flex items-center justify-between">
@@ -389,7 +389,7 @@ export default function AdminOrders() {
                       <div className="flex justify-between text-xs sm:text-sm">
                         <span className="text-gray-600">Payment Method:</span>
                         <span className="font-medium text-gray-900">
-                          {selectedOrder.payment_method === 'full_online' 
+                          {selectedOrder.payment_method === 'online_payment' 
                             ? 'Full Online Payment' 
                             : 'Partial Payment (40% + 60% COD)'}
                         </span>

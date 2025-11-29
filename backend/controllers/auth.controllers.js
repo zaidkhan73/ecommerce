@@ -1,9 +1,12 @@
+import dotenv from "dotenv";
+
 import { Admin } from "../models/admin.model.js";
 import { generateToken } from "../utils/tokenGenerator.js";
 import { User } from "../models/user.model.js";
 import { TempUser } from "../models/temp.model.js";
 import bcrypt from "bcryptjs";
 import { sendVerificationMail, sendPasswordMail } from "../utils/mail.js";
+dotenv.config();
 
 const adminLogin = async (req, res) => {
   try {
@@ -13,16 +16,30 @@ const adminLogin = async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
+    // Step 1: Check with .env credentials
+    if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
+      const token = generateToken("env_admin", "admin");
+      res.cookie("admin_token", token, {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: false,
+      });
+
+      return res.status(200).json({ message: "Admin logged in via env", token });
+    }
+
+    // Step 2: Check inside database if not matched in .env
     const admin = await Admin.findOne({ email });
     if (!admin) {
-      return res.status(400).json({ message: "Admin not found" });
+      return res.status(400).json({ message: "Invalid credentials" });
     }
 
     const isPasswordCorrect = await bcrypt.compare(password, admin.password);
     if (!isPasswordCorrect) {
-      return res.status(400).json({ message: "Incorrect password" });
+      return res.status(400).json({ message: "Invalid credentials" });
     }
 
+    // DB admin login success
     const token = generateToken(admin._id, "admin");
     res.cookie("admin_token", token, {
       httpOnly: true,
@@ -30,9 +47,10 @@ const adminLogin = async (req, res) => {
       secure: false,
     });
 
-    return res.status(200).json({ message: "Admin logged in", token });
+    return res.status(200).json({ message: "Admin logged in via DB", token });
+
   } catch (error) {
-    return res.status(500).json({ message: `Error during login: ${error}` });
+    return res.status(500).json({ message: `Error during login: ${error.message}` });
   }
 };
 

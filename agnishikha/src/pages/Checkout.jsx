@@ -116,10 +116,6 @@ const CheckoutPage = () => {
 
       const body = {
         payment_method: paymentMethod,
-        total_amount: paymentDetails.finalTotal,
-        online_amount: paymentDetails.onlineAmount.toFixed(0),
-        cod_amount: paymentDetails.codAmount.toFixed(0),
-        discount: paymentDetails.discount,
         address: address,
       };
 
@@ -148,7 +144,7 @@ const CheckoutPage = () => {
         return;
       }
 
-      const razorpayKey = key || import.meta.env.VITE_RAZORPAY_KEY_ID;
+      const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID;
 
 
       const options = {

@@ -9,7 +9,7 @@ import { useAuth } from "../hooks/useAuth";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  //const [errorMsg, setErrorMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate()
 
   const { login } = useAuth();
@@ -32,7 +32,12 @@ function Login() {
         navigate("/")
         
     } catch (error) {
-        console.log(error)        
+        console.log(error)  
+         if (error.response && error.response.data && error.response.data.message) {
+    setErrorMsg(error.response.data.message);
+  } else {
+    setErrorMsg("Login failed! Please try again.");
+  }      
     }
   }
 
@@ -59,6 +64,12 @@ function Login() {
         {/* {errorMsg && (
           <p className="text-red-600 text-center mb-3 text-sm">{errorMsg}</p>
         )} */}
+        {errorMsg && (
+  <p className="text-red-600 bg-red-100 border border-red-300 rounded-md p-2 text-center mb-4 text-sm">
+    {errorMsg}
+  </p>
+)}
+
 
         {/* Form */}
         <form onSubmit={handleLogin} className="space-y-4">

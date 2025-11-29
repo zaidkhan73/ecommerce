@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { serverUrl } from "../App";
 
@@ -24,7 +24,6 @@ function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
-  const dropdownRef = useRef(null);
   const [products, setProducts] = useState([]);
   const [productCount, setProductCount] = useState()
   const [categoryCount, setCategoryCount] = useState()
@@ -53,15 +52,13 @@ function Dashboard() {
 
   // Close dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setOpenDropdown(null);
-      }
-    };
+  const handleClickOutside = () => setOpenDropdown(null);
+  if (openDropdown !== null) {
+    document.addEventListener("click", handleClickOutside);
+  }
+  return () => document.removeEventListener("click", handleClickOutside);
+}, [openDropdown]);
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   const toggleDropdown = (productId) => {
     setOpenDropdown(openDropdown === productId ? null : productId);
@@ -263,9 +260,13 @@ function Dashboard() {
                     </span>
 
                     {/* Dropdown Menu */}
-                    <div className="relative" ref={dropdownRef}>
+                    <div className="relative" >
                       <button
-                        onClick={() => toggleDropdown(product._id)}
+                        onClick={(e) => {
+  e.stopPropagation();
+  toggleDropdown(product._id);
+}}
+
                         className="p-2 hover:bg-gray-200 rounded-lg transition-colors duration-200"
                       >
                         <MoreVertical className="w-5 h-5 text-gray-600" />
@@ -275,18 +276,21 @@ function Dashboard() {
                       {openDropdown === product._id && (
                         <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
                           <button
-                            onClick={() =>
-                              navigate(`/products/edit/${product._id}`)
-                            }
+                            onClick={(e) => {
+  e.stopPropagation();
+  navigate(`/products/edit/${product._id}`);
+}}
                             className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors duration-200"
                           >
                             <Edit2 className="w-4 h-4" />
                             Edit
                           </button>
                           <button
-                            onClick={() =>
-                              navigate(`/products/edit/${product._id}`)
-                            }
+                            onClick={(e) => {
+  e.stopPropagation();
+  navigate(`/products/${product._id}`);
+}}
+
                             className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors duration-200"
                           >
                             <Eye className="w-4 h-4" />

@@ -6,41 +6,24 @@ import crypto from "crypto";
 import { Order } from "../models/order.model.js";
 import { Payment } from "../models/payment.model.js";
 import { Cart } from "../models/cart.model.js";
-import Razorpay from "razorpay";    
+import Razorpay from "razorpay";
 import { sendDeliveryOtpMail, sendNewOrderMail } from "../utils/mail.js";
 import { User } from "../models/user.model.js";
 
-
-
 export const createOrder = async (req, res) => {
   try {
-    const {
-      payment_method,
-      total_amount,
-      address,
-      online_amount,
-      cod_amount,
-      discount,
-    } = req.body;
-
-
-
+    const { payment_method, address } = req.body;
     const userId = req.user.id;
-
 
     // Fetch the full user object
     const user = await User.findById(userId);
-  
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-   
-
-    if (!payment_method || !total_amount || !address) {
+    if (!payment_method || !address) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
+    // Fetch cart and populate product details
     const cart = await Cart.findOne({ user_id: userId }).populate(
       "items.product_id"
     );
@@ -48,47 +31,60 @@ export const createOrder = async (req, res) => {
       return res.status(400).json({ message: "Cart is empty" });
     }
 
+    // Calculate subtotal and shipping
+    let subtotal = 0;
+    cart.items.forEach((item) => {
+      subtotal += item.product_id.final_price * item.quantity;
+    });
+    subtotal = Math.round(subtotal);
+
+    let shipping = subtotal >= 999 ? 0 : 59;
+    shipping = Math.round(shipping);
+
+    let totalAmount = subtotal + shipping;
+    totalAmount = Math.round(totalAmount);
+
+    // Calculate payment amounts based on method
+    let onlineAmount = totalAmount;
+    let codAmount = 0;
+    let discount = 0;
+
     let payment_status = "pending"; // default full online
-    if (payment_method === "cod_only") payment_status = "pending_cod";
-    else if (payment_method === "split_online_cod") payment_status = "partial_pending";
 
-    
+    if (payment_method === "cod_only") {
+      payment_status = "pending_cod";
+    } else if (payment_method === "split_online_cod") {
+      payment_status = "partial_pending";
+      onlineAmount = Math.round(totalAmount * 0.4);
+      codAmount = Math.round(totalAmount * 0.6);
+    } else if (payment_method === "online_payment") {
+      discount = Math.round(totalAmount * 0.05);
+      onlineAmount = totalAmount - discount;
+    }
 
-    // Create Order with user.name & user.phone
+    // Create Order
     const order = await Order.create({
-  user: {
-    id: user._id,
-    name: user.username,
-    phone: user.phone,
-    email:user.email
-  },
-  items: cart.items.map((item) => ({
-    product_id: item.product_id._id,
-    product_name: item.product_id.name,
-    product_image: item.product_id.product_image[0].url,
-    price: item.product_id.final_price,
-    quantity: item.quantity,
-  })),
-  payment_method,
-  total_amount,
-  address,
-  payment_status,
-  online_amount,
-  cod_amount,
-  discount,
-});
-
-    // Send email with user name
-    sendNewOrderMail(
-      order._id,
-      user.email,      // <-- pass user name
+      user: {
+        id: user._id,
+        name: user.username,
+        phone: user.phone,
+        email: user.email,
+      },
+      items: cart.items.map((item) => ({
+        product_id: item.product_id._id,
+        product_name: item.product_id.name,
+        product_image: item.product_id.product_image[0].url,
+        price: Math.round(item.product_id.final_price),
+        quantity: item.quantity,
+      })),
       payment_method,
-      total_amount,
-      online_amount,
-      cod_amount,
+      total_amount: totalAmount,
+      address,
+      payment_status,
+      online_amount: onlineAmount,
+      cod_amount: codAmount,
       discount,
-      JSON.stringify(address)
-    ).catch((err) => console.log("EMAIL ERROR:", err));
+    });
 
     // Pure COD → no online payment
     if (payment_method === "cod_only") {
@@ -97,7 +93,7 @@ export const createOrder = async (req, res) => {
       return res.json({
         message: "COD Order Placed Successfully",
         order,
-        razorpayOrder: null,
+        razorOrder: null,
       });
     }
 
@@ -108,15 +104,16 @@ export const createOrder = async (req, res) => {
     });
 
     const razorOrder = await razorpayInstance.orders.create({
-      amount: Math.round(online_amount * 100),
+      amount: onlineAmount * 100, // Razorpay amount in paise, integer
       currency: "INR",
       receipt: `order_${order._id}`,
     });
 
+    // Save payment info
     await Payment.create({
       user_id: userId,
       order_id: order._id,
-      amount: online_amount,
+      amount: onlineAmount,
       status: "created",
       razorpay_order_id: razorOrder.id,
       method: payment_method,
@@ -126,9 +123,8 @@ export const createOrder = async (req, res) => {
       message: "Order created, proceed with payment",
       order,
       razorOrder,
-      key: process.env.RAZORPAY_KEY_ID,
+      key: process.env.RAZORPAY_KEY_ID, // safe, public key
     });
-
   } catch (error) {
     console.error("CREATE ORDER ERROR:", error);
     res.status(500).json({ message: "Server error" });
@@ -158,7 +154,6 @@ export const verifyPayment = async (req, res) => {
     payment.razorpay_signature = razorpay_signature;
     await payment.save();
 
-
     const order = await Order.findById(payment.order_id);
 
     // Split Payment Handling
@@ -172,17 +167,27 @@ export const verifyPayment = async (req, res) => {
     order.order_status = "placed";
     await order.save();
 
+    // Email admin only when payment is successful
+    await sendNewOrderMail(
+      order._id,
+      order.user.email,
+      order.payment_method,
+      order.total_amount,
+      order.online_amount,
+      order.cod_amount,
+      order.discount,
+      JSON.stringify(order.address)
+    ).catch((err) => console.log("EMAIL ERROR:", err));
+
     // Clear Cart After Success Payment
     await Cart.findOneAndUpdate({ user_id: order.user.id }, { items: [] });
 
     res.json({ message: "Payment Verified Successfully", order });
-
   } catch (error) {
     console.error("VERIFY PAYMENT ERROR:", error);
     res.status(500).json({ message: "Verification failed" });
   }
 };
-
 
 export const getOrders = async (req, res) => {
   try {
@@ -207,13 +212,14 @@ export const getOrders = async (req, res) => {
   }
 };
 
-
 export const sendOrderOtp = async (req, res) => {
   try {
     const { orderId } = req.params;
 
-    const order = await Order.findById(orderId)
-      .populate("user", "name email phone");
+    const order = await Order.findById(orderId).populate(
+      "user",
+      "name email phone"
+    );
 
     if (!order) return res.status(404).json({ message: "Order not found" });
 
@@ -228,13 +234,14 @@ export const sendOrderOtp = async (req, res) => {
     const userEmail = order?.user?.email;
 
     if (!userEmail) {
-      return res.status(400).json({ message: "User email missing in database!" });
+      return res
+        .status(400)
+        .json({ message: "User email missing in database!" });
     }
 
     await sendDeliveryOtpMail(userName, userEmail, orderId, otp);
 
     res.json({ message: "OTP sent to user email successfully" });
-
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error.message });
@@ -276,7 +283,6 @@ export const verifyDeliveryOtp = async (req, res) => {
     await order.save();
 
     res.json({ success: true, message: "OTP verified — Order Delivered!" });
-    
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -286,10 +292,9 @@ export const getPendingOrdersCount = async (req, res) => {
   try {
     // Admin can see all orders → exclude pending and partial_pending orders
     let filter = {
-  order_status: { $ne: "delivered" }, // delivered orders exclude
-  payment_status: { $nin: ["pending", "partial_pending"] } // pending payments exclude
-};
-
+      order_status: { $ne: "delivered" }, // delivered orders exclude
+      payment_status: { $nin: ["pending", "partial_pending"] }, // pending payments exclude
+    };
 
     // If user is not admin → show only his orders
     if (req.user.role !== "admin") {
@@ -310,10 +315,3 @@ export const getPendingOrdersCount = async (req, res) => {
     });
   }
 };
-
-
-
-
-
-
-
