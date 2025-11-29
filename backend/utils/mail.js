@@ -5,14 +5,15 @@ dotenv.config();
 
 // Create a test account or replace with real credentials.
 const transporter = nodemailer.createTransport({
-  service: "Gmail",
-  port: 465,
-  secure: true, // true for 465, false for other ports
+  host: "smtp.gmail.com",
+  port: 587, // 587 for TLS, 465 for SSL
+  secure: false, // true for 465, false for 587
   auth: {
     user: process.env.EMAIL,
-    pass: process.env.PASS,
+    pass: process.env.PASS, // App password if 2FA enabled
   },
 });
+
 
 export const sendPasswordMail = async (to, otp, username) => {
   await transporter.sendMail({
