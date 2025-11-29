@@ -10,7 +10,7 @@ import CartPage from "./pages/Cart";
 import CheckoutPage from "./pages/Checkout";
 import MyOrders from "./pages/MyOrders";
 
-export const serverUrl = "http://localhost:8000";
+export const serverUrl = "https://agnishikha-backend.onrender.com";
 
 function App() {
   return (
