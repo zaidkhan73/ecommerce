@@ -314,7 +314,7 @@ const [showPassword, setShowPassword] = useState(false);
               Already have an Account ?{" "}
               <span
                 className="text-primary cursor-pointer"
-                onClick={() => navigate("/signin")}
+                onClick={() => navigate("/login")}
               >
                 Sign In
               </span>
