@@ -12,7 +12,7 @@ import Orders from './pages/Orders'
 import ViewProduct from './pages/ViewProduct'
 import ForgotPassword from './pages/ForgotPassword'
 
-export const serverUrl = 'http://localhost:8000'
+export const serverUrl = 'https://agnishikha-backend.onrender.com'
 
 function App() {
   return (
