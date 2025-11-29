@@ -9,7 +9,10 @@ const adminSchema = new mongoose.Schema({
     password:{
         type:String,
         required:true
-    }
+    },
+    resetOtp: String,
+otpExpires: Date,
+isOtpVerified: { type: Boolean, default: false },
 },{
     timestamps:true
 })

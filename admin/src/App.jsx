@@ -10,6 +10,7 @@ import AddProduct from './pages/AddProduct'
 import EditProductPage from './pages/EditProduct'
 import Orders from './pages/Orders'
 import ViewProduct from './pages/ViewProduct'
+import ForgotPassword from './pages/ForgotPassword'
 
 export const serverUrl = 'http://localhost:8000'
 
@@ -18,6 +19,7 @@ function App() {
     <AuthProvider>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
 
         <Route
           path="/"

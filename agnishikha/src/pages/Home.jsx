@@ -36,26 +36,28 @@ const HomePage = () => {
       return matchesSearch && matchesCategory;
     })
     .sort((a, b) => {
-      switch (sortBy) {
-        case "price-low":
-          return (a.final_price || a.product_price) - (b.final_price || b.product_price);
+  switch (sortBy) {
+    case "price-low":
+      return (a.final_price || a.product_price) - (b.final_price || b.product_price);
 
-        case "price-high":
-          return (b.final_price || b.product_price) - (a.final_price || a.product_price);
+    case "price-high":
+      return (b.final_price || b.product_price) - (a.final_price || a.product_price);
 
-        case "name-asc":
-          return a.name.localeCompare(b.name);
+    case "name-asc":
+      return a.name.localeCompare(b.name);
 
-        case "discount":
-          const discountA = a.product_discount || 0;
-          const discountB = b.product_discount || 0;
-          return discountB - discountA;
+    case "discount": {
+      const discountA = a.product_discount || 0;
+      const discountB = b.product_discount || 0;
+      return discountB - discountA;
+    }
 
-        case "newest":
-        default:
-          return 0; // Keep original order (newest first)
-      }
-    });
+    case "newest":
+    default:
+      return 0;
+  }
+});
+
 
 
   useEffect(()=>{
@@ -179,11 +181,18 @@ const HomePage = () => {
             <p className="text-gray-600">Try adjusting your search or filters</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
-            {filteredAndSortedProducts.map((product) => (
-              <ProductCard key={product._id} product={product} />
-            ))}
-          </div>
+          <div className="grid gap-4 sm:gap-6 
+    grid-cols-[repeat(auto-fit,minmax(220px,1fr))]">
+  {filteredAndSortedProducts.map((product) => (
+    <div className="flex">
+      <ProductCard key={product._id} product={product} />
+    </div>
+  ))}
+</div>
+
+
+
+
         )}
       </main>
     </div>

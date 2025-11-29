@@ -282,6 +282,36 @@ export const verifyDeliveryOtp = async (req, res) => {
   }
 };
 
+export const getPendingOrdersCount = async (req, res) => {
+  try {
+    // Admin can see all orders → exclude pending and partial_pending orders
+    let filter = {
+  order_status: { $ne: "delivered" }, // delivered orders exclude
+  payment_status: { $nin: ["pending", "partial_pending"] } // pending payments exclude
+};
+
+
+    // If user is not admin → show only his orders
+    if (req.user.role !== "admin") {
+      filter["user.id"] = req.user.id;
+    }
+
+    const pendingCount = await Order.countDocuments(filter);
+
+    res.status(200).json({
+      success: true,
+      pendingCount,
+    });
+  } catch (error) {
+    console.error("GET PENDING ORDERS COUNT ERROR:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while fetching pending count",
+    });
+  }
+};
+
+
 
 
 

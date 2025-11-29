@@ -14,6 +14,26 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { serverUrl } from "../App";
 
+const StarRating = ({ rating, totalStars = 5 }) => {
+    return (
+      <div className="flex items-center gap-1">
+        {[...Array(totalStars)].map((_, index) => (
+          <Star
+            key={index}
+            className={`w-4 h-4 sm:w-5 sm:h-5 ${
+              index < rating
+                ? "fill-yellow-400 text-yellow-400"
+                : "fill-gray-200 text-gray-200"
+            }`}
+          />
+        ))}
+        <span className="ml-2 text-xs sm:text-sm text-gray-600">
+          ({rating}.0)
+        </span>
+      </div>
+    );
+  };
+
 const ProductViewPage = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -27,7 +47,6 @@ const ProductViewPage = () => {
   const [discount, setDiscount] = useState(0);
   const [finalPrice, setFinalPrice] = useState(0);
   const [minimum, setMinimum] = useState(0);
-  const [status, setStatus] = useState("");
   const [rating, setRating] = useState(0);
   const [image, setImage] = useState([]);
   const [productId, setProductId] = useState("");
@@ -62,25 +81,7 @@ const ProductViewPage = () => {
 
   const totalPrice = (finalPrice * selectedQuantity).toFixed(0);
 
-  const StarRating = ({ rating, totalStars = 5 }) => {
-    return (
-      <div className="flex items-center gap-1">
-        {[...Array(totalStars)].map((_, index) => (
-          <Star
-            key={index}
-            className={`w-4 h-4 sm:w-5 sm:h-5 ${
-              index < rating
-                ? "fill-yellow-400 text-yellow-400"
-                : "fill-gray-200 text-gray-200"
-            }`}
-          />
-        ))}
-        <span className="ml-2 text-xs sm:text-sm text-gray-600">
-          ({rating}.0)
-        </span>
-      </div>
-    );
-  };
+  
 
   const addToCart = async () => {
     try {
@@ -115,7 +116,7 @@ const ProductViewPage = () => {
         setQuantity(p.inventory_quantity);
         setMinimum(p.minimum);
         setProductId(p._id);
-        setStatus(p.status);
+       
         setRating(p.product_rating || 0);
 
         if (Array.isArray(p.product_image)) {
@@ -248,31 +249,32 @@ const ProductViewPage = () => {
             </div>
 
             {/* Description with Show More/Less */}
-            <div className="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-100">
-              <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-2">
-                Product Description
-              </h3>
-              <p className="text-xs sm:text-sm lg:text-base text-gray-600 leading-relaxed break-words">
-                {displayDescription}
-                {isLongDescription && !showFullDescription && "..."}
-              </p>
-              {isLongDescription && (
-                <button
-                  onClick={() => setShowFullDescription(!showFullDescription)}
-                  className="flex items-center gap-1 mt-2 text-purple-700 hover:text-purple-800 font-medium text-xs sm:text-sm transition-colors duration-200"
-                >
-                  {showFullDescription ? (
-                    <>
-                      Show Less <ChevronUp className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                    </>
-                  ) : (
-                    <>
-                      Show More <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                    </>
-                  )}
-                </button>
-              )}
-            </div>
+            <div className="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-100 max-h-64 overflow-auto">
+  <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-2">
+    Product Description
+  </h3>
+  <p className="text-xs sm:text-sm lg:text-base text-gray-600 leading-relaxed break-words">
+    {displayDescription}
+    {isLongDescription && !showFullDescription && "..."}
+  </p>
+  {isLongDescription && (
+    <button
+      onClick={() => setShowFullDescription(!showFullDescription)}
+      className="flex items-center gap-1 mt-2 text-purple-700 hover:text-purple-800 font-medium text-xs sm:text-sm transition-colors duration-200"
+    >
+      {showFullDescription ? (
+        <>
+          Show Less <ChevronUp className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+        </>
+      ) : (
+        <>
+          Show More <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+        </>
+      )}
+    </button>
+  )}
+</div>
+
 
             {/* Quantity Selector */}
             <div>

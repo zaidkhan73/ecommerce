@@ -47,6 +47,81 @@ const adminLogout = async (req, res) => {
     .json({ message: "Admin signed out" });
 };
 
+/* Admin Forgot Password Controllers */
+const adminPasswordOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+    console.log(email)
+
+    const admin = await Admin.findOne({ email });
+    if (!admin) {
+      return res.status(400).json({ message: "Admin does not exist" });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    admin.resetOtp = otp;
+    admin.otpExpires = Date.now() + 5 * 60 * 1000;
+    admin.isOtpVerified = false;
+
+    await admin.save();
+    await sendPasswordMail(email, otp, admin.username); // You can create admin-specific mail too
+
+    return res
+      .status(200)
+      .json({ message: "Password reset mail sent successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: `Error sending OTP: ${error}` });
+  }
+};
+
+const adminVerifyOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    const admin = await Admin.findOne({ email });
+
+    if (!admin || admin.resetOtp !== otp || admin.otpExpires < Date.now()) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    admin.resetOtp = undefined;
+    admin.isOtpVerified = true;
+    admin.otpExpires = undefined;
+
+    await admin.save();
+    return res.status(200).json({ message: "OTP verified successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: `OTP verification failed: ${error}` });
+  }
+};
+
+const adminResetPassword = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const admin = await Admin.findOne({ email });
+
+    if (!admin || !admin.isOtpVerified) {
+      return res.status(400).json({ message: "Invalid request" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    admin.password = hashedPassword;
+    admin.isOtpVerified = false;
+
+    await admin.save();
+
+    return res.status(200).json({ message: "Password reset successfully" });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: `Password reset failed: ${error}` });
+  }
+};
+
+
 {
   /*user controllers */
 }
@@ -290,4 +365,7 @@ export {
   verifyOtp,
   resetPassword,
   signOut,
+  adminPasswordOtp,
+  adminResetPassword,
+  adminVerifyOtp
 };

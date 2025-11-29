@@ -3,7 +3,7 @@ import { ShoppingCart, Menu, X, Package, LogOut, Grid } from 'lucide-react';
 import {useNavigate} from "react-router-dom"
 import axios from "axios"
 import { serverUrl } from '../App';
-
+import { useAuth } from '../hooks/useAuth';
 
 
 const Header = ({ cartCount }) => {
@@ -13,32 +13,37 @@ const Header = ({ cartCount }) => {
   const navigate = useNavigate()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
 
+  const {logout} = useAuth()
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
 
-  const handleLogout = async () => {
-    if (isLoggingOut) return; // Prevent multiple logout calls
+ const handleLogout = async () => {
+  if (isLoggingOut) return;
 
-    setIsLoggingOut(true);
+  setIsLoggingOut(true);
 
-    try {
-      const res = await axios.get(`${serverUrl}/api/auth/signout`, {
-        withCredentials: true,
-      });
+  try {
+    const res = await axios.get(`${serverUrl}/api/auth/signout`, {
+      withCredentials: true,
+    });
 
-      // Navigate to signin page
-      navigate("/login", { replace: true });
+    // Clear frontend user data
+    logout(); 
 
-      console.log("Logged out successfully:", res);
-    } catch (error) {
-      console.log("Logout error:", error);
-      alert("failed")
-    } finally {
-      setIsLoggingOut(false);
-    }
-  };
+    navigate("/login", { replace: true });
+    console.log("Logged out successfully:", res);
+    
+  } catch (error) {
+    console.log("Logout error:", error);
+    alert("Logout failed. Try again.");
+  } finally {
+    setIsLoggingOut(false);
+  }
+};
+
 
   // useEffect(()=>{
   //   const getCartCount = async () => {

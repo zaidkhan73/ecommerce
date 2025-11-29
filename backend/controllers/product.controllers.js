@@ -40,6 +40,7 @@ const addProduct = async (req, res) => {
         images.push(uploaded);
       }
     }
+    
 
     // Create product
     const newProduct = new Product({
@@ -53,7 +54,7 @@ const addProduct = async (req, res) => {
       inventory_quantity: inventory_quantity || 0,
       minimum: minimum || 1,
       product_category,
-      final_price,
+      final_price: final_price.toFixed(0),
     });
 
     await newProduct.save();

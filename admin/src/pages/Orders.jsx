@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { serverUrl } from '../App';
 import axios from "axios";
 import { ChevronLeft, Package, MapPin, CreditCard, Wallet, Truck, CheckCircle, Clock, XCircle, Star, ChevronDown, ChevronUp, User, Phone, Mail, Send, Key } from 'lucide-react';
-import { useNavigate } from "react-router-dom";
+
 
 export default function AdminOrders() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -14,7 +14,7 @@ export default function AdminOrders() {
   const [otpValue, setOtpValue] = useState('');
   const [loadingOtp, setLoadingOtp] = useState(false);
   const [verifyingOtp, setVerifyingOtp] = useState(false);
-  const navigate = useNavigate();
+  
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -32,32 +32,38 @@ export default function AdminOrders() {
   }, []);
 
   const getStatusColor = (status) => {
-    switch (status) {
-      case 'delivered':
-        return 'bg-green-100 text-green-700 border-green-200';
-      case 'placed':
-        return 'bg-blue-100 text-blue-700 border-blue-200';
-      default:
-        return 'bg-gray-100 text-gray-700 border-gray-200';
-    }
-  };
+  if (status === "delivered") {
+    return "bg-green-100 text-green-700 border-green-200";
+  } else if (status === "placed") {
+    return "bg-blue-100 text-blue-700 border-blue-200";
+  } else {
+    // pending, cancelled ya koi aur status
+    return "bg-gray-100 text-gray-700 border-gray-200";
+  }
+};
 
   const getStatusIcon = (status) => {
-    switch (status) {
-      case 'delivered':
-        return <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />;
-      case 'placed':
-        return <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />;
-      default:
-        return <Package className="w-3.5 h-3.5 sm:w-4 sm:h-4" />;
-    }
-  };
+  if (status === "delivered") {
+    return <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />;
+  } else if (status === "placed") {
+    return <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />;
+  } else {
+    // pending, cancelled ya koi aur status
+    return <Package className="w-3.5 h-3.5 sm:w-4 sm:h-4" />;
+  }
+};
 
   const getPaymentStatusColor = (status) => {
-    return status === 'paid' 
-      ? 'bg-green-50 text-green-700 border-green-200' 
-      : 'bg-orange-50 text-orange-700 border-orange-200';
-  };
+  if (status === 'paid') {
+    return 'bg-green-50 text-green-700 border-green-200';
+  } else if (status === 'partial_paid') {
+    return 'bg-yellow-50 text-yellow-700 border-yellow-200';
+  } else {
+    // cancelled ya koi aur status
+    return 'bg-red-50 text-red-700 border-red-200';
+  }
+};
+
 
   const sendOTP = async () => {
     try {
@@ -232,17 +238,23 @@ export default function AdminOrders() {
                           {selectedOrder.order_status}
                         </span>
                         <span className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm font-semibold border ${getPaymentStatusColor(selectedOrder.payment_status)}`}>
-                          {selectedOrder.payment_status === 'paid' ? 'Paid' : 'Pending'}
+                          {selectedOrder.payment_status === 'paid' 
+  ? 'Paid' 
+  : selectedOrder.payment_status === 'partial_paid' 
+    ? 'Partial Paid' 
+    : 'Cancelled'}
+
                         </span>
                       </div>
                     </div>
 
                     {/* Update Status with OTP Verification */}
+                    {(selectedOrder.payment_status === "paid" || selectedOrder.payment_status === "partial_paid") ? (
                     <div className="pt-3 border-t border-gray-100">
                       <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
                         Order Status
                       </label>
-
+                      
                       {selectedOrder.order_status === 'placed' ? (
                         <div className="space-y-3">
                           <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
@@ -306,6 +318,7 @@ export default function AdminOrders() {
                         </div>
                       )}
                     </div>
+                    ) :  null}
                   </div>
 
                   {/* Order Items */}
@@ -350,16 +363,17 @@ export default function AdminOrders() {
 
                     {/* Delivery Address */}
                     <div className="mb-3 sm:mb-4 p-2.5 sm:p-3 bg-gray-50 rounded-lg">
-                      <div className="flex items-center gap-2 mb-1.5 sm:mb-2">
-                        <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 flex-shrink-0" />
-                        <h4 className="text-sm sm:text-base font-semibold text-gray-900">
-                          Delivery Address
-                        </h4>
-                      </div>
-                      <p className="text-xs sm:text-sm text-gray-700 pl-6 sm:pl-7">
-                        {selectedOrder.address}
-                      </p>
-                    </div>
+  <div className="flex items-center gap-2 mb-1.5 sm:mb-2">
+    <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 flex-shrink-0" />
+    <h4 className="text-sm sm:text-base font-semibold text-gray-900">
+      Delivery Address
+    </h4>
+  </div>
+  <p className="text-xs sm:text-sm text-gray-700 pl-6 sm:pl-7 whitespace-normal break-words">
+    {selectedOrder.address}
+  </p>
+</div>
+
                   </div>
 
                   {/* Payment Summary */}

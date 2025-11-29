@@ -28,6 +28,7 @@ function Dashboard() {
   const [products, setProducts] = useState([]);
   const [productCount, setProductCount] = useState()
   const [categoryCount, setCategoryCount] = useState()
+  const [pendingOrder, setPendingOrder] = useState("")
   
   const stats = [
     {
@@ -44,7 +45,7 @@ function Dashboard() {
     },
     {
       title: "Pending Orders",
-      value: "34",
+      value: pendingOrder,
       icon: Clock,
       color: "from-orange-500 to-orange-600",
     },
@@ -101,9 +102,23 @@ function Dashboard() {
   }, []);
 
   useEffect(()=>{
+    const fetchOrderCount = async()=>{
+      try {
+      const res = await axios.get(`${serverUrl}/api/orders/pending-count`,{withCredentials:true})
+      console.log("pending order count",res.data.pendingCount)
+      setPendingOrder(res.data.pendingCount)
+    } catch (error) {
+      console.log(error)
+    }
+    }
+    fetchOrderCount()
+    
+  },[])
+
+  useEffect(()=>{
       const fetchCategories = async () => {
         try {
-          const res = await axios.get(`${serverUrl}/api/category/getAll-categories`,{withCredentials: true})
+          const res = await axios.get(`${serverUrl}/api/category/admin/getAll-categories`,{withCredentials: true})
           console.log("getAllCategories: ",res.data.data.length)
           setCategoryCount(res.data.data.length)
         } catch (error) {

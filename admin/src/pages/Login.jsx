@@ -79,6 +79,12 @@ function Login() {
             className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-purple-400 focus:border-purple-400 outline-none transition"
             required
           />
+          <div
+            className="text-sm font-medium text-purple-400 cursor-pointer text-right"
+            onClick={() => navigate("/forgot-password")}
+          >
+            Forgot password?
+          </div>
 
           <button
             type="submit"

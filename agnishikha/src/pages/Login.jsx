@@ -19,42 +19,35 @@ function Login() {
 
   const {login} = useAuth()
 
-  const handleSignIn = async () => {
-    setErrorMessage("");
-    setIsLoading(true);
+const handleSignIn = async () => {
+  setErrorMessage("");
+  setIsLoading(true);
 
-    try {
-      const res = await axios.post(
-        `${serverUrl}/api/auth/signin`,
-        { email, password },
-        { withCredentials: true }
-      );
-      console.log(res.data)
-      if (res.data.success) {
-      login(res.data.user);
-      navigate("/");
+  try {
+    const res = await axios.post(
+      `${serverUrl}/api/auth/signin`,
+      { email, password },
+      { withCredentials: true }
+    );
+
+    if (res.data.success) {
+      login(res.data.user); // Update auth state
+      return navigate("/"); // STOP execution after navigate
     }
-      navigate("/");
 
+  } catch (error) {
+    console.log("error: ", error);
 
-    } catch (error) {
-      console.log("error: ", error);
-
-      if (error.response) {
-        if (error.response.status === 400) {
-          setErrorMessage("Invalid Email or password");
-        } else if (error.response.data?.message) {
-          setErrorMessage(error.response.data.message);
-        } else {
-          setErrorMessage("Something went wrong. Please try again.");
-        }
-      } else {
-        setErrorMessage("Network error. Please check your connection.");
-      }
-    } finally {
-      setIsLoading(false);
+    if (error.response?.status === 400) {
+      setErrorMessage("Invalid Email or password");
+    } else {
+      setErrorMessage("Something went wrong. Please try again.");
     }
-  };
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-bg w-full flex items-center justify-center p-4">

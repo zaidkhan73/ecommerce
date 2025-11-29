@@ -5,19 +5,20 @@ export const ProductCard = ({ product }) => {
 
   return (
     <div
-      className={`bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden transition-shadow duration-200 flex flex-col 
+  className={`bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden transition-shadow duration-200 flex flex-col h-full
   ${
     product.status === "out_of_stock"
       ? "opacity-60 cursor-not-allowed"
       : "hover:shadow-md cursor-pointer"
   }`}
-      onClick={() => {
-        if (product.status !== "out_of_stock") {
-          navigate(`/product/${product._id}`);
-        }
-      }}
-    >
-      <div className="relative aspect-square bg-gray-100">
+  onClick={() => {
+    if (product.status !== "out_of_stock") {
+      navigate(`/product/${product._id}`);
+    }
+  }}
+>
+
+      <div className="relative w-full aspect-square bg-gray-100">
         <img
           src={product.product_image[0].url}
           alt={product.name}

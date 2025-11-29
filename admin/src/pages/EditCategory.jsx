@@ -38,7 +38,7 @@ export default function EditCategory() {
     setShowProductDeleteConfirm(true);
   };
 
-  const handleConfirmProductDelete = async (id) => {
+  const handleConfirmProductDelete = async () => {
   try {
     if (productToDelete?._id) {
       const res = await axios.delete(
@@ -100,7 +100,7 @@ export default function EditCategory() {
     const fetchCategory = async () => {
       try {
         const res = await axios.get(
-          `${serverUrl}/api/category/get-category/${id}`,
+          `${serverUrl}/api/category/admin/get-category/${id}`,
           { withCredentials: true }
         );
         console.log(res.data.data.products);

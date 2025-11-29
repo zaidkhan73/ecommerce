@@ -6,8 +6,8 @@ import {  adminAuth,  userAuth } from "../middlewares/isAuth.js"
 const categoryRouter = express.Router()
 
 categoryRouter.post("/create-category",adminAuth,createCategory)
-categoryRouter.get("/getAll-categories",adminAuth,getAllCategories)
-categoryRouter.get("/get-category/:id",adminAuth,getCategoryById)
+categoryRouter.get("/admin/getAll-categories",adminAuth,getAllCategories)
+categoryRouter.get("/admin/get-category/:id",adminAuth,getCategoryById)
 categoryRouter.put("/update-category/:id",adminAuth,updateCategory)
 categoryRouter.delete("/delete-category/:id",adminAuth,deleteCategory)
 

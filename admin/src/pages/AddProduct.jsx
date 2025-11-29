@@ -128,7 +128,7 @@ export default function AddProduct() {
     const fetchCategories = async () => {
       try {
         const res = await axios.get(
-          `${serverUrl}/api/category/getAll-categories`,
+          `${serverUrl}/api/category/admin/getAll-categories`,
           { withCredentials: true }
         );
         console.log("product Categories: ", res.data.data);

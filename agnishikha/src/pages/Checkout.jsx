@@ -58,7 +58,7 @@ const CheckoutPage = () => {
     0
   );
   const shipping = subtotal >= 999 ? 0 : 59;
-  const totalBeforeDiscount = subtotal + shipping;
+  
 
   // Calculate payment amounts based on method
   const getPaymentDetails = () => {
@@ -117,8 +117,8 @@ const CheckoutPage = () => {
       const body = {
         payment_method: paymentMethod,
         total_amount: paymentDetails.finalTotal,
-        online_amount: paymentDetails.onlineAmount,
-        cod_amount: paymentDetails.codAmount,
+        online_amount: paymentDetails.onlineAmount.toFixed(0),
+        cod_amount: paymentDetails.codAmount.toFixed(0),
         discount: paymentDetails.discount,
         address: address,
       };
@@ -129,6 +129,7 @@ const CheckoutPage = () => {
       console.log("1111111", res.data)
 
       const { message, order, razorOrder, key } = res.data;
+      console.log("message: ",message)
 
 
       // If no razorpay order (shouldn't happen with our methods, but as fallback)

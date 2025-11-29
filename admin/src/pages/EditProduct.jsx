@@ -146,7 +146,7 @@ export default function EditProductPage() {
     const fetchCategories = async () => {
       try {
         const res = await axios.get(
-          `${serverUrl}/api/category/getAll-categories`,
+          `${serverUrl}/api/category/admin/getAll-categories`,
           { withCredentials: true }
         );
         console.log("product Categories: ", res.data.data);
@@ -277,72 +277,80 @@ export default function EditProductPage() {
             </div>
 
             {/* Final Price Display */}
-            {discount && price && (
-              <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
-                <p className="text-sm text-gray-600">
-                  Original Price:{" "}
-                  <span className="line-through">
-                    ₹{parseFloat(price).toFixed(2)}
-                  </span>
-                </p>
-                <p className="text-lg font-bold text-purple-600">
-                  Final Price: ₹{calculateDiscountedPrice()}
-                </p>
-                <p className="text-xs text-gray-500 mt-1">
-                  Save ₹
-                  {(
-                    parseFloat(price) - parseFloat(calculateDiscountedPrice())
-                  ).toFixed(2)}{" "}
-                  ({discount}% off)
-                </p>
-              </div>
-            )}
+            {price !== "" && discount !== "" && (
+  <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
+    <p className="text-sm text-gray-600">
+      Original Price:{" "}
+      <span className="line-through">
+        ₹{parseFloat(price).toFixed(2)}
+      </span>
+    </p>
+    <p className="text-lg font-bold text-purple-600">
+      Final Price: ₹{calculateDiscountedPrice()}
+    </p>
+    <p className="text-xs text-gray-500 mt-1">
+      Save ₹
+      {(
+        parseFloat(price) - parseFloat(calculateDiscountedPrice())
+      ).toFixed(2)}{" "}
+      ({discount}% off)
+    </p>
+  </div>
+)}
 
-            {/* Product Image Upload */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Product Image{" "}
-                {images.length > 0 && (
-                  <p className="text-xs text-red-500 mt-1">
-                    New images selected — old images will be replaced.
-                  </p>
-                )}
-              </label>
-              <div className="flex items-start gap-4">
-                {imagePreview.length > 0 && (
-                  <div className="flex gap-4 flex-wrap">
-                    {imagePreview.map((img, index) => (
-                      <div
-                        key={index}
-                        className="w-32 h-32 rounded-lg overflow-hidden border-2 border-gray-200"
-                      >
-                        <img src={img} className="w-full h-full object-cover" />
-                      </div>
-                    ))}
-                  </div>
-                )}
 
-                <label className="flex-1 cursor-pointer">
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 hover:border-purple-500 transition-colors duration-200 text-center">
-                    <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
-                    <p className="text-sm text-gray-600 mb-1">
-                      {images.length > 0
-                        ? `${images.length} image(s) selected`
-                        : "Click to upload images"}
-                    </p>
+            
+            {/* Product Image Upload */} 
+<div>
+  <label className="block text-sm font-semibold text-gray-700 mb-2">
+    Product Images{" "}
+    {!!images.length && (
+  <p className="text-xs text-red-500 mt-1">
+    New images selected — old images will be replaced.
+  </p>
+)}
 
-                    <p className="text-xs text-gray-500">PNG, JPG up to 10MB</p>
-                  </div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleImageChange}
-                    className="hidden"
-                  />
-                </label>
-              </div>
-            </div>
+  </label>
+
+  {/* Proper Responsive Preview Container */}
+  {imagePreview.length > 0 && (
+    <div className="flex flex-wrap gap-4 mb-4 max-h-40 overflow-auto">
+      {imagePreview.map((img, index) => (
+        <div
+          key={index}
+          className="w-28 h-28 rounded-lg overflow-hidden border border-gray-300"
+        >
+          <img
+            src={img}
+            alt="preview"
+            className="w-full h-full object-cover"
+          />
+        </div>
+      ))}
+    </div>
+  )}
+
+  {/* Upload Button */}
+  <label className="cursor-pointer block">
+    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 hover:border-purple-500 transition-colors duration-200 text-center">
+      <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
+      <p className="text-sm text-gray-600 mb-1">
+        {images.length > 0
+          ? `${images.length} image(s) selected`
+          : "Click to upload images"}
+      </p>
+      <p className="text-xs text-gray-500">PNG, JPG up to 10MB</p>
+    </div>
+    <input
+      type="file"
+      accept="image/*"
+      multiple
+      onChange={handleImageChange}
+      className="hidden"
+    />
+  </label>
+</div>
+
 
             {/* Status and Quantity Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
