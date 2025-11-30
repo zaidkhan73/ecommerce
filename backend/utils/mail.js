@@ -19,9 +19,22 @@ transporter.verify((err, success) => {
   else console.log("SMTP ready:", success);
 });
 
+const sendMailPromise = (mailOptions) => {
+  return new Promise((resolve, reject) => {
+    transporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        console.log("Mail error:", err);
+        return reject(err);
+      }
+      console.log("Mail sent:", info.response);
+      resolve(info);
+    });
+  });
+};
+
 
 export const sendPasswordMail = async (to, otp, username) => {
-  await transporter.sendMail({
+  const mailOptions = {
     from: process.env.EMAIL,
     to,
     subject: "Reset your password",
@@ -255,11 +268,13 @@ export const sendPasswordMail = async (to, otp, username) => {
         </div>
     </body>
     </html>`,
-  });
+  };
+
+  return sendMailPromise(mailOptions);
 };
 
 export const sendVerificationMail = async (to, otp, username,  timestamp = new Date().toLocaleString(), device = "Web Browser", location = "Unknown", ipAddress = "Hidden") => {
-  await transporter.sendMail({
+  const mailOptions = {
     from: process.env.EMAIL,
     to,
     subject: "Verify your Email",
@@ -643,7 +658,9 @@ export const sendVerificationMail = async (to, otp, username,  timestamp = new D
     </div>
 </body>
 </html>`,
-  });
+  };
+
+  return sendMailPromise(mailOptions);
 };
 
 
@@ -660,7 +677,7 @@ export const sendNewOrderMail = async (
 ) => {
   const adminMail = process.env.ADMIN_EMAIL; // ADD THIS IN .env FILE
 
-  await transporter.sendMail({
+  const mailOption = {
     from: process.env.EMAIL,
     to: adminMail,
     subject: `🛒 New Order Placed - Order #${orderId}`,
@@ -738,7 +755,9 @@ export const sendNewOrderMail = async (
   </div>
 </body>
 </html>`
-  });
+  };
+
+  return sendMailPromise(mailOptions);
 };
 
 
@@ -749,7 +768,7 @@ export const sendDeliveryOtpMail = async (
   otp,
   timestamp = new Date().toLocaleString()
 ) => {
-  await transporter.sendMail({
+  const mailOptions = {
     from: process.env.EMAIL,
     to: userEmail,
     subject: `🚚 Delivery Verification OTP - Order #${orderId}`,
@@ -828,5 +847,7 @@ export const sendDeliveryOtpMail = async (
   </div>
 </body>
 </html>`
-  });
+  };
+
+  return sendMailPromise(mailOptions);
 };
