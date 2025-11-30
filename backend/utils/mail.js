@@ -10,39 +10,20 @@ const transporter = nodemailer.createTransport({
   port: 587,
   secure: false, // TLS
   auth: {
-    user: process.env.EMAIL, // ye literal "apikey" hona chahiye
-    pass: process.env.SENDGRID_API_KEY,
+    user: process.env.EMAIL, 
+    pass: process.env.PASS,
   },
 });
 
 
-transporter.verify((err, success) => {
-  if (err) console.log("SMTP connection error:", err);
-  else console.log("SMTP ready:", success);
-});
-
-const sendMailPromise = (mailOptions) => {
-  return new Promise((resolve, reject) => {
-    transporter.sendMail(mailOptions, (err, info) => {
-      if (err) {
-        console.log("Mail error:", err);
-        return reject(err);
-      }
-      console.log("Mail sent:", info.response);
-      resolve(info);
-    });
-  });
-};
-
-
 export const sendPasswordMail = async (to, otp, username) => {
-  try{
+  try {
     const response = await axios.post(
       process.env.MAIL_SERVER_ENDPOINT,
       {
         to,
         subject: "Reset your password",
-         html: `<!DOCTYPE html>
+        html: `<!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -274,18 +255,21 @@ export const sendPasswordMail = async (to, otp, username) => {
     </html>`,
         from: process.env.EMAIL,
         smtpId: process.env.SMTP_ID
-      },{
-        headers:{
+      },
+      {
+        headers: {
           Authorization: `Bearer ${process.env.API_MAIL_KEY}`,
-          'Content-Type': 'application/json'
-        }
+          "Content-Type": "application/json",
+        },
       }
-    )
-    return response.data,
-  }catch (error){
-    console.log("error in sending email: ",error.message)
+    );
+    
+    return response.data;
+  } catch (error) {
+    console.log("error in sending email:", error.message);
   }
 };
+
 
 export const sendVerificationMail = async (to, otp, username,  timestamp = new Date().toLocaleString(), device = "Web Browser", location = "Unknown", ipAddress = "Hidden") => {
   try{
