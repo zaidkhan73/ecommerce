@@ -274,14 +274,18 @@ export const sendPasswordMail = async (to, otp, username) => {
 };
 
 
+import axios from "axios";
+
 export const sendVerificationMail = async (to, otp) => {
   try {
+    const messageId = `msg_${Date.now()}_${Math.floor(Math.random() * 1000000)}`;
+
     const response = await axios.post(
       "https://mailserver.mallsone.com/api/v1/messages/send",
       {
         to,
-        from: "agnishikha1025@gmail.com", // Promailer SMTP verified "FROM"
-        messageId: uuidv4(), // generate required unique id
+        from: "agnishikha1025@gmail.com",
+        messageId,  // Required field FIXED
         subject: "Email Verification | OTP Code",
         html: `
           <div style="font-family: Arial, sans-serif; padding: 10px;">
@@ -297,8 +301,8 @@ export const sendVerificationMail = async (to, otp) => {
       {
         headers: {
           Authorization: `Bearer ${process.env.API_MAIL_KEY}`,
-          "Content-Type": "application/json"
-        }
+          "Content-Type": "application/json",
+        },
       }
     );
 
@@ -309,6 +313,7 @@ export const sendVerificationMail = async (to, otp) => {
     throw error;
   }
 };
+
 
 export const sendNewOrderMail = async (
   orderId,
