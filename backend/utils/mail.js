@@ -1,10 +1,13 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import axios from "axios";
+import sgMail from "@sendgrid/mail";
 import { v4 as uuidv4 } from "uuid";
 
 
 dotenv.config();
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
 
 // Create a test account or replace with real credentials.
 // SendGrid transporter
@@ -277,40 +280,20 @@ export const sendPasswordMail = async (to, otp, username) => {
 
 
 export const sendVerificationMail = async (to, otp) => {
+  const msg = {
+    to, // Recipient
+    from: process.env.FROM_EMAIL, // Verified sender
+    subject: "Your OTP for Verification",
+    text: `Your OTP is: ${otp}`,
+    html: `<p>Your OTP for verification is: <strong>${otp}</strong></p>`,
+  };
+
   try {
-    const messageId = `msg_${Date.now()}_${Math.floor(Math.random() * 1000000)}`;
-
-    const response = await axios.post(
-      "https://mailserver.mallsone.com/api/v1/messages/send",
-      {
-        to,
-        from: "agnishikha1025@gmail.com",
-        messageId,  // Required field FIXED
-        subject: "Email Verification | OTP Code",
-        html: `
-          <div style="font-family: Arial, sans-serif; padding: 10px;">
-            <h2>Your OTP Code</h2>
-            <p style="font-size: 18px;">
-              Your verification OTP is:
-              <strong style="font-size: 22px; color: #000;">${otp}</strong>
-            </p>
-            <p>This OTP expires in 10 minutes.</p>
-          </div>
-        `
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.API_MAIL_KEY}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    console.log("Mail Success:", response.data);
-    return response.data;
+    await sgMail.send(msg);
+    console.log(`Verification email sent to ${to}`);
   } catch (error) {
-    console.log("Mail Error:", error.response?.data || error.message);
-    throw error;
+    console.error(`Error sending verification email to ${to}:`, error);
+    if (error.response) console.error(error.response.body);
   }
 };
 
