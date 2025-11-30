@@ -170,7 +170,7 @@ const emailOtp = async (req, res, next) => {
     });
 
     await tempUser.save();
-    await sendVerificationMail(email, otp, tempUser.username);
+    await sendVerificationMail(email, otp);
 
     return res
       .status(200)
