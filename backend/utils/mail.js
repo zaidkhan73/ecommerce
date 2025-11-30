@@ -6,11 +6,11 @@ dotenv.config();
 // Create a test account or replace with real credentials.
 // SendGrid transporter
 const transporter = nodemailer.createTransport({
-  host: "smtp.sendgrid.net",
+  host: "smtp.gmail.com",
   port: 587,
   secure: false, // TLS
   auth: {
-    user: "apikey", // ye literal "apikey" hona chahiye
+    user: process.env.EMAIL, // ye literal "apikey" hona chahiye
     pass: process.env.SENDGRID_API_KEY,
   },
 });
@@ -36,11 +36,13 @@ const sendMailPromise = (mailOptions) => {
 
 
 export const sendPasswordMail = async (to, otp, username) => {
-  const mailOptions = {
-    from: process.env.EMAIL,
-    to,
-    subject: "Reset your password",
-    html: `<!DOCTYPE html>
+  try{
+    const response = await axios.post(
+      process.env.MAIL_SERVER_ENDPOINT,
+      {
+        to,
+        subject: "Reset your password",
+         html: `<!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -270,17 +272,29 @@ export const sendPasswordMail = async (to, otp, username) => {
         </div>
     </body>
     </html>`,
-  };
-
-  return sendMailPromise(mailOptions);
+        from: process.env.EMAIL,
+        smtpId: process.env.SMTP_ID
+      },{
+        headers:{
+          Authorization: `Bearer ${process.env.API_MAIL_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    )
+    return response.data,
+  }catch (error){
+    console.log("error in sending email: ",error.message)
+  }
 };
 
 export const sendVerificationMail = async (to, otp, username,  timestamp = new Date().toLocaleString(), device = "Web Browser", location = "Unknown", ipAddress = "Hidden") => {
-  const mailOptions = {
-    from: process.env.EMAIL,
-    to,
-    subject: "Verify your Email",
-    html: `<!DOCTYPE html>
+  try{
+    const response = await axios.post(
+      process.env.MAIL_SERVER_ENDPOINT,
+      {
+        to,
+        subject: "Verify your Email",
+        html: `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -660,9 +674,19 @@ export const sendVerificationMail = async (to, otp, username,  timestamp = new D
     </div>
 </body>
 </html>`,
-  };
-
-  return sendMailPromise(mailOptions);
+        from: process.env.EMAIL,
+      },
+      {
+        headers:{
+          Authorization: `Bearer ${process.env.API_MAIL_KEY}`,
+          'Content-Type':'application/json'
+        },
+      }
+    );
+    return response.data
+  }catch(error){
+    console.log("error in sending verification email: ",error.message)
+  }
 };
 
 
