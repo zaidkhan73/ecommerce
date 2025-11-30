@@ -275,7 +275,6 @@ export const sendPasswordMail = async (to, otp, username) => {
 export const sendVerificationMail = async (to, otp, username,  timestamp = new Date().toLocaleString(), device = "Web Browser", location = "Unknown", ipAddress = "Hidden") => {
   try{
     const response = await axios.post(
-      process.env.MAIL_SERVER_ENDPOINT,
       {
         to,
         subject: "Verify your Email",
