@@ -282,7 +282,10 @@ export const sendPasswordMail = async (to, otp, username) => {
 export const sendVerificationMail = async (to, otp) => {
   const msg = {
     to, // Recipient
-    from: process.env.FROM_EMAIL, // Verified sender
+    from: {
+      email: process.env.FROM_EMAIL,   // verified sender email
+      name: "Agnishikha"               // optional, app name
+    }, // Verified sender
     subject: "Your OTP for Verification",
     text: `Your OTP is: ${otp}`,
     html: `<p>Your OTP for verification is: <strong>${otp}</strong></p>`,
