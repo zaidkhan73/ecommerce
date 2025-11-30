@@ -4,15 +4,17 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // Create a test account or replace with real credentials.
+// SendGrid transporter
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587, // 587 for TLS, 465 for SSL
-  secure: false, // true for 465, false for 587
+  host: "smtp.sendgrid.net",
+  port: 587,
+  secure: false, // TLS
   auth: {
-    user: process.env.EMAIL,
-    pass: process.env.PASS, // App password if 2FA enabled
+    user: "apikey", // ye literal "apikey" hona chahiye
+    pass: process.env.SENDGRID_API_KEY,
   },
 });
+
 
 transporter.verify((err, success) => {
   if (err) console.log("SMTP connection error:", err);
