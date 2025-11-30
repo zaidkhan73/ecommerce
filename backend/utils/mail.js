@@ -1,6 +1,8 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
-import axios from "axios"
+import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
+
 
 dotenv.config();
 
@@ -278,6 +280,8 @@ export const sendVerificationMail = async (to, otp) => {
       "https://mailserver.mallsone.com/api/v1/messages/send",
       {
         to,
+        from: "agnishikha1025@gmail.com", // Promailer SMTP verified "FROM"
+        messageId: uuidv4(), // generate required unique id
         subject: "Email Verification | OTP Code",
         html: `
           <div style="font-family: Arial, sans-serif; padding: 10px;">
