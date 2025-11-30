@@ -274,7 +274,7 @@ export const sendPasswordMail = async (to, otp, username) => {
 };
 
 
-import axios from "axios";
+
 
 export const sendVerificationMail = async (to, otp) => {
   try {
