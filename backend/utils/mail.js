@@ -23,13 +23,15 @@ const transporter = nodemailer.createTransport({
 
 
 export const sendPasswordMail = async (to, otp, username) => {
-  try {
-    const response = await axios.post(
-      process.env.MAIL_SERVER_ENDPOINT,
-      {
-        to,
-        subject: "Reset your password",
-        html: `<!DOCTYPE html>
+  const msg = {
+    to, // Recipient
+    from: {
+      email: process.env.EMAIL,   // verified sender email
+      name: "Agnishikha"               // optional, app name
+    }, // Verified sender
+    subject: "Reset your password",
+    text: `Your OTP is: ${otp}`,
+    html: `<!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -259,20 +261,13 @@ export const sendPasswordMail = async (to, otp, username) => {
         </div>
     </body>
     </html>`,
-        from: process.env.EMAIL,
-        smtpId: process.env.SMTP_ID
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.API_MAIL_KEY}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    
-    return response.data;
+  };
+
+  try {
+    await sgMail.send(msg);
   } catch (error) {
-    console.log("error in sending email:", error.message);
+    console.error(`Error sending email to ${to}:`, error);
+    if (error.response) console.error(error.response.body);
   }
 };
 
