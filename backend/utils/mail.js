@@ -283,7 +283,7 @@ export const sendVerificationMail = async (to, otp) => {
   const msg = {
     to, // Recipient
     from: {
-      email: process.env.FROM_EMAIL,   // verified sender email
+      email: process.env.EMAIL,   // verified sender email
       name: "Agnishikha"               // optional, app name
     }, // Verified sender
     subject: "Your OTP for Verification",
