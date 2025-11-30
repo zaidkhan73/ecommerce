@@ -671,6 +671,10 @@ export const sendVerificationMail = async (to, otp, username,  timestamp = new D
     return response.data
   }catch(error){
     console.log("error in sending verification email: ",error.message)
+    console.log("error response data:", error.response?.data);
+console.log("error status:", error.response?.status);
+console.log("error headers:", error.response?.headers);
+console.log("error config:", error.config);
   }
 };
 
