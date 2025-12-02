@@ -177,7 +177,7 @@ const HomePage = () => {
             <p className="text-gray-600">Try adjusting your search or filters</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
+          <div className="gap-3 sm:gap-4 lg:gap-5 flex flex-wrap flex-row justify-center items-center">
             {filteredAndSortedProducts.map((product) => (
               <ProductCard key={product._id} product={product} />
             ))}
