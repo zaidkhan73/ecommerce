@@ -37,7 +37,4 @@ A full-fledged **eCommerce MERN Application** for selling handmade jewellery wit
 | Payment | Razorpay |
 | Email Service | SendGrid |
 
----
-
-## 📂 Project Structure
 
