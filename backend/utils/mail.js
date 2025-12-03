@@ -2,24 +2,11 @@ import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import axios from "axios";
 import sgMail from "@sendgrid/mail";
-import { v4 as uuidv4 } from "uuid";
+
 
 
 dotenv.config();
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
-
-// Create a test account or replace with real credentials.
-// SendGrid transporter
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false, // TLS
-  auth: {
-    user: process.env.EMAIL, 
-    pass: process.env.PASS,
-  },
-});
 
 
 export const sendPasswordMail = async (to, otp, username) => {
@@ -309,11 +296,14 @@ export const sendNewOrderMail = async (
 ) => {
   const adminMail = process.env.ADMIN_EMAIL; // ADD THIS IN .env FILE
 
-  const mailOption = {
-    from: process.env.EMAIL,
-    to: adminMail,
-    subject: `🛒 New Order Placed - Order #${orderId}`,
-    html: `<!DOCTYPE html>
+  const msg = {
+    to:adminMail,
+    from:{
+      email: process.env.EMAIL,
+      name: "Agnishikha"
+    },
+     subject: `🛒 New Order Placed - Order #${orderId}`,
+     html: `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -389,7 +379,14 @@ export const sendNewOrderMail = async (
 </html>`
   };
 
-  return sendMailPromise(mailOptions);
+  try {
+    await sgMail.send(msg);
+    console.log(`order email sent to ${adminMail}`);
+  } catch (error) {
+    console.error(`Error sending verification email to ${adminMail}:`, error);
+    if (error.response) console.error(error.response.body);
+  }
+   
 };
 
 
@@ -400,9 +397,12 @@ export const sendDeliveryOtpMail = async (
   otp,
   timestamp = new Date().toLocaleString()
 ) => {
-  const mailOptions = {
-    from: process.env.EMAIL,
+  const msg = {
     to: userEmail,
+    from:{
+      email: process.env.EMAIL,
+      name: "Agnishikha"
+    },
     subject: `🚚 Delivery Verification OTP - Order #${orderId}`,
     html: `<!DOCTYPE html>
 <html lang="en">
@@ -481,5 +481,13 @@ export const sendDeliveryOtpMail = async (
 </html>`
   };
 
-  return sendMailPromise(mailOptions);
+  try {
+    await sgMail.send(msg);
+    console.log(`delivery otp sent to ${userName}`);
+  } catch (error) {
+    console.error(`Error sending delivery otp to ${userName}:`, error);
+    if (error.response) console.error(error.response.body);
+  }
+  
+
 };
