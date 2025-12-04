@@ -4,6 +4,7 @@ import { ProductCard } from "../components/ProductCard";
 import { Search, Filter, ArrowUpDown, ShoppingCart, Menu, X, Package, LogOut, Grid } from 'lucide-react';
 import axios from "axios"
 import { serverUrl } from "../App";
+import Footer from "./Footer";
 
 
 const HomePage = () => {
@@ -184,6 +185,7 @@ const HomePage = () => {
           </div>
         )}
       </main>
+      <Footer/>
     </div>
   );
 };
