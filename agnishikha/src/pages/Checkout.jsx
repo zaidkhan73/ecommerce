@@ -57,13 +57,13 @@ const CheckoutPage = () => {
     (sum, item) => sum + item.price * item.quantity,
     0
   );
-  const shipping = subtotal >= 999 ? 0 : 59;
+  const shipping = subtotal >= 499 ? 0 : 59;
   
 
   // Calculate payment amounts based on method
   const getPaymentDetails = () => {
   const subtotal = cartItems.reduce((s, i) => s + i.price * i.quantity, 0);
-  const shipping = subtotal >= 999 ? 0 : 59;
+  const shipping = subtotal >= 499 ? 0 : 59;
   const totalBeforeDiscount = subtotal + shipping;
 
   if (paymentMethod === "online_payment") {
