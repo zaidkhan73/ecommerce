@@ -106,7 +106,7 @@ const CartPage = () => {
 
 
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const shipping = subtotal >= 999 ? 0 : 59;
+  const shipping = subtotal >= 499 ? 0 : 59;
   const total = subtotal + shipping;
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -277,8 +277,8 @@ const CartPage = () => {
                   <div className="flex justify-between items-start text-xs sm:text-sm">
                     <div className="flex-1">
                       <span className="text-gray-600">Shipping</span>
-                      {subtotal < 999 && (
-                        <p className="text-xs text-gray-500">(free above ₹999)</p>
+                      {subtotal < 499 && (
+                        <p className="text-xs text-gray-500">(free above ₹499)</p>
                       )}
                     </div>
                     {shipping === 0 ? (
@@ -289,10 +289,10 @@ const CartPage = () => {
                   </div>
 
                   {/* Free Shipping Message */}
-                  {subtotal < 999 && (
+                  {subtotal < 499 && (
                     <div className="bg-purple-50 border border-purple-200 rounded-lg p-2.5 sm:p-3">
                       <p className="text-xs text-purple-700 font-medium">
-                        Add ₹{(999 - subtotal).toFixed(0)} more for FREE delivery!
+                        Add ₹{(499 - subtotal).toFixed(0)} more for FREE delivery!
                       </p>
                     </div>
                   )}
